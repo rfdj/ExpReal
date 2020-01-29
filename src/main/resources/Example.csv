@@ -1,0 +1,49 @@
+# Narrative act;# Condition;# English annotated text;# French annotated text;# Dutch annotated text
+InformIntention;;my intention is to $task;#;Mijn intentie is: $task.
+;;;;
+InformIntention;$task=goToOpera;we have to leave in 20 minutes to arrive on time for the opera;#;We moeten over 20 minuten gaan.
+InformIntention;$task=goToOpera, $speaker=paul, $listener=lili;Lili, dad and mom want to go to the opera tonight. We leave in 20 minutes;#;Lili, papa en mama willen vanavond naar de opera gaan. We gaan over 20 minuten weg.
+InformIntention;$task=goToOpera;$listener, we have to leave in 20 minutes, to arrive on time for the opera;#;$listener, we moeten over 20 minuten weggaan om op tijd te zijn voor de opera.
+;;;;
+InformIntention;$task=haveADrink;{subject:%julia} (this part was lost in earlier ExpReal version) {verb:be} here tonight.;#;{subject:%julia}, the subject, {verb:zijn} hier vannacht
+InformIntention;$task=haveAdrink, $speaker=frank;{subject:%julia} {verb:be} here for the night, {subject:%frank} would like to be alone with {object:%julia}.;#;#
+InformIntention;$task=haveAdrink, $speaker=frank;{subject:%julia} {verb:be} here for the night, {subject:%frank} would like to be alone with {object:%julia}.;#;{subject:%julia} {verb:komen} vanavond!
+InformIntention;$task=haveAdrink, $speaker=paul;—{subject:%julia} {verb:be} here for the evening, {subject:%frank} would like to be alone with {object:%julia}.— answer: —fine!—;#;#
+;;;;
+InformIntention;$task=throwBall;{subject:%julia} {verb:throw} {object:%ball} to {indirectobject:%monkey}.;{subject:%julia} {indirectobject:%monkey} {verb:lancer} {object:%ball};{subject:%julia} {verb:gooien} {object:%ball} naar {indirectobject:%monkey}.
+;;;;
+;;;;
+# Task;;;;
+goToOpera;;go to the opera tonight;#;vanavond naar de opera gaan
+haveAdrink;$listener!=lili;have a nice drink with %lili;#;iets drinken met %lili
+haveAdrink;$listener=lili;have a nice drink with you;#;iets drinken met jou
+writeDocumentation;;write some more documentation;#;meer documentatie schrijven
+;;;;
+;;;;
+;;;;
+# %variables;;;;
+lili;;Lili;Lili;Lili
+julia;;Julia;Julia;Julia
+frank;;Frankie;Frank;Frank
+ball;;a ball;une balle;een bal
+monkey;;the monkey;le singe;de aap
+olivia;;Olivia;Julia;Julia
+;;;;
+# Goal;;;;
+InformGoalSolving;$goal=wearCoat;Because $obstacle, {subject:%goal*owner} should $goal.;#;{subject:%goal*owner} moet $goal, want $obstacle.
+wearCoat;;wear {subject:%goal*owner.poss} coat;#;{subject:%frank.poss} jas aantrekken
+tooCold;;it is too cold outside;#;het is koud
+;;;;
+;;;;
+# Test pronouns;;;;
+InformIntention;$test=possessive;{subject: %frank} {verb: be} {object: best |friend| < %julia}.;{subject: %frank} {verb: être} {object: le meilleur |ami| < %julia}.;{subject: %frank} {verb: zijn} {object: beste |vriend| < %julia}.
+InformIntention;$test=possessive2;That jacket is {object:%julia.poss}.;#;Die jas is van {object:%julia.poss}.
+;;;;
+;;;;
+WarnSideEffect;;{subject: %olivia} will get crazy with the idea of letting {object: %lili} spend the night with {complement: %julia}!;#;#
+;;;;
+PickRandom;$task=haveAdrink;Random 1;#;#
+PickRandom;$task=haveAdrink;Random 2;#;#
+PickRandom;$task=haveAdrink;Random 3;#;#
+PickRandom;$task=haveAdrink;Random 4;#;#
+PickRandom;;Random 5 with less specificity. Should not be picked.;#;#

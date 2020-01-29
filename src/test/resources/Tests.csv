@@ -1,0 +1,81 @@
+# Narrative act;# Condition;# English annotated text;# French annotated text;# Dutch annotated text
+#;;;;
+frank;;Frank;Frank;Frank
+julia;;Julia;Julia;Julia
+pete;;Pete;Pierre;Pieter
+paul;;Paul;Paul;Paul
+lili;;Lili;Lili;Lili
+olivia;;Olivia;Olivia;Olivia
+;;;;
+# Test pronouns;;;;
+InformIntention;$test=pronoun;{subject: %frank.c} {verb: be} {object: best |friend| < %julia}.;{subject: %frank.c} {verb: être} {object: le meilleur |ami| < %julia}.;{subject: %frank.c} {verb: zijn} {object: beste |vriend| < %julia}.
+InformIntention;$test=pronoun-gender;{subject: %julia.c} {verb: be} {object: best |friend.f| < %frank}.;{subject: %julia.c} {verb: être} {object: le meilleur |ami.f| < %frank}.;{subject: %julia.c} {verb: zijn} {object: beste |vriend.f| < %frank}.
+InformIntention;$test=pronoun-reflexiveverb;{subject: %julia.c} {verb: amuse yourself}.;{subject: %julia.c} {verb: se amuser}.;{subject: %julia.c} {verb: zich amuseren}.
+;;;;
+# Test noun features;;;;
+InformIntention;$test=nounfeatures1;{subject: %pete};{subject: %pete};{subject: %pete}
+InformIntention;$test=nounfeatures2;{subject: friend < %frank};{subject: ami < %frank};{subject: vriend < %frank}
+InformIntention;$test=nounfeatures3;{subject: the friend < %frank};{subject: le ami < %frank};{subject: de vriend < %frank}
+InformIntention;$test=nounfeatures4;{subject: big red |jacket|};{subject: grande |veste| rouge};{subject: grote rode |jas|}
+InformIntention;$test=nounfeatures5;{subject: big red jacket};{subject: grande veste};{subject: grote rode jas}
+InformIntention;$test=nounfeatures6;{subject: big red jacket < %frank};{subject: grande veste < %frank};{subject: grote rode jas < %frank}
+InformIntention;$test=nounfeatures7;{subject: $player} {verb: go} to $argument.;{subject: $player} {verb: aller} à $argument.;{subject: $player} {verb: gaan} naar $argument.
+NounFeatures7Argument;;$patient;$patient;$patient
+;;;;
+# Test verbs;;;;
+InformIntention;$test=verbs;{subject: %pete.c} {verb: run}.;{subject: %pete.c} {verb: courir}.;{subject: %pete.c} {verb: rennen}.
+InformIntention;$test=verbs2;{subject: %pete} {verb: run.past}.;{subject: %pete} {verb: courir.past}.;{subject: %pete} {verb: ren.past}.
+InformIntention;$test=verbs-infinitive;{subject: %pete.c} {verb: want} {inf: to dance}.;{subject: %pete.c} {verb: vouloir} {inf: danser}.;{subject: %pete.c} {verb: willen} {inf: dansen}.
+InformIntention;$test=verbs-infinitivereflexive;{subject: %pete.c} {verb: want} {inf: to amuse yourself}.;{subject: %pete.c} {verb: vouloir} {inf: se amuser}.;{subject: %pete.c} {verb: willen} {inf: zich amuseren}.
+InformIntention;$test=verbs-conditional;$listener, it would be nice if {subject: $listener} {verb: can.past} sit down on the chair!;$listener, ce serait parfait si {subject: $listener} {verb: pouvoir.conditional} {inf: se assoir} sur la chaise!;$listener, het zou fijn zijn als {subject: $listener} op de stoel {verb: zullen.past} {inf: kunnen} {inf: gaan} {inf: zitten}!
+InformIntention;$test=verbs-parentchildagreement;{subject: %julia.c} $wish.;{subject: %julia.c} $wish.;{subject: %julia.c} $wish.
+wantToDance;;{verb: want} to dance;{verb: vouloir} danser;{verb: willen} dansen
+wantToAmuseYourself;;{verb: want} {inf: amuse yourself};{verb: vouloir} {inf: se amuser};{verb: willen} {inf: zich amuseren}
+;;;;
+# Test SwitchDialog;;;;
+InformIntention;$test=switchdialog1;—Hi, $listener!— answer: —Hello, $speaker!—;—Salut, $listener!— answer: —Bonjour, $speaker!—;—Hoi, $listener!— answer: —Hallo, $speaker!—
+InformIntention;$test=switchdialog2;--Hi, $listener!-- answer: --Hello, $speaker!--;--Salut, $listener!-- answer: --Bonjour, $speaker!--;--Hoi, $listener!-- answer: --Hallo, $speaker!--
+InformIntention;$test=switchdialog3;—Hi, $listener!-- answer: --Hello, $speaker!—;--Salut, $listener!— answer: —Bonjour, $speaker!--;--Hoi, $listener!— answer: --Hallo, $speaker!—
+;;;;
+# @Tags;;;;
+InformIntention;$test=userdefinedconditions1,@userChoice;Button1-EN;Button1-FR;Button1-NL
+InformIntention;$test=userdefinedconditions2,@predicateChoice;Button2-EN;Button2-FR;Button2-NL
+InformIntention;$test=userdefinedconditions3,@someOtherTag;Button3-EN;Button3-FR;Button3-NL
+InformIntention;$test=userdefinedconditionstask1,@userChoice;Please, $BeQuiet!;S'il vous plait $BeQuiet!;Alsjeblieft, $BeQuiet!
+InformIntention;$test=userdefinedconditionstask2,@predicateChoice;Please, $BeQuiet!;S'il vous plait $BeQuiet!;Alsjeblieft, $BeQuiet!
+InformIntention;$test=userdefinedconditionstask3,@someOtherTag;Please, $BeQuiet!;S'il vous plait $BeQuiet!;Alsjeblieft, $BeQuiet!
+BeQuiet;;be quiet;soyez tranquille;wees stil
+InformIntention;$test=nestedvariables;Please, $beQuiet1!;S'il vous plait $beQuiet1!;Alsjeblieft, $beQuiet1!
+beQuiet1;;be $quiet1;soyez $quiet1;wees $quiet
+quiet;;$quiet1;$quiet1;$quiet1
+quiet1;;$quiet3;$quiet3;$quiet3
+quiet2;;$quiet4;$quiet4;$quiet4
+quiet3;;$quiet5;$quiet5;$quiet5
+quiet4;;$quiet6;$quiet6;$quiet6
+quiet5;;quiet;tranquille;stil
+InformIntention;$test=dynamicargument;Please, go sit on $argument!;S'il vous plait, {#subject: $listener}{inf: se assoir} sur $argument!;Alsjeblieft, ga op $argument zitten!
+Chair;;the chair;la chaise;de stoel
+InformIntention;$test=nesteddynamicargument;$task;$task;$task
+SitOn;;Please, go sit on $argument!;S'il vous plait, {#subject: $listener}{inf: se assoir} sur $argument!;Alsjeblieft, ga op $argument zitten!
+;;;;
+;;;;
+# Referring expressions;;;;
+InformIntention;$test=refexp-simplerepetition;{subject: %paul.c} needs medicine. {subject: %paul.c} takes the medicine.;{subject: %paul.c} a besoin de médicaments. {subject: %paul.c} prend les médicaments.;{subject: %paul.c} heeft medicijnen nodig. {subject: %paul.c} neemt de medicijnen.
+InformIntention;$test=refexp-longdistance;{subject: %paul.c} needs medicine. The medicine is in the drawer. The drawer is closed. {subject: %paul.c} opens the drawer. {subject: %paul.c} takes the medicine.;{subject: %paul.c} a besoin de médicaments. Les médicaments sons dans le tiroir. Le tiroir est fermé. {subject: %paul.c} ouvre le tiroir. {subject: %paul.c} prend les médicaments.;{subject: %paul.c} heeft medicijnen nodig. De medicijnen liggen in de la. De la is gesloten. {subject: %paul.c} opent de la. {subject: %paul.c} neemt de medicijnen.
+InformIntention;$test=refexp-longdistanceowner;{subject: %paul.c} needs medicine. The medicine is in {object: drawer < %lili}. {subject: drawer.n.c < %lili} is closed. {subject: %paul.c} opens the drawer. {subject: %paul.c} takes the medicine.;{subject: %paul.c} a besoin de médicaments. Les médicaments sons dans {object: le tiroir < %lili}. {subject: le tiroir.c < %lili} est fermé. {subject: %paul.c} ouvre le tiroir. {subject: %paul.c} prend les médicaments.;{subject: %paul.c} heeft medicijnen nodig. De medicijnen liggen in {object: la < %lili}. {subject: la.c < %lili} is gesloten. {subject: %paul.c} opent de la. {subject: %paul.c} neemt de medicijnen.
+InformIntention;$test=refexp-ambiguity;{subject: %frank.c} greeted {object: %pete}. {subject: %pete.c} smiled.;{subject: %frank.c} a salué {object: %pete}. {subject: %pete.c} a souri.;{subject: %frank.c} begroette {object: %pete}. {subject: %pete.c} glimlachte.
+InformIntention;$test=refexp-ambiguityowner;{subject: dog.c < %frank} greeted {object: dog < %pete}. {subject: dog.c < %pete} barked.;{subject: le chien.c < %frank} a salué {object: le chien < %pete}. {subject: le chien.c < %pete} a aboyé.;{subject: hond.c < %frank} begroette {object: hond < %pete}. {subject: hond.c < %pete} blafte.
+InformIntention;$test=refexp-ambiguityownerfeature;{subject: dog.f.c < %frank} greeted {object: dog.f < %pete}. {subject: dog.f.c < %pete} barked.;{subject: la chienne.c < %frank} a salué {object: la chienne < %pete}. {subject: la chienne.c < %pete} a aboyé.;{subject: hond.f.c < %frank} begroette {object: hond.f < %pete}. {subject: hond.f.c < %pete} blafte.
+InformIntention;$test=refexp-interactivedialog1;Did you hear about {object: %frank}?;Avez-vous entendu parler de {object: %frank}?;Heb je gehoord over {object: %frank}?
+InformIntention;$test=refexp-interactivedialog2;What's up with {object: %frank}?;Quoi de neuf avec {indirectobject: %frank}?;Wat is er met {object: %frank}?
+InformIntention;$test=refexp-interactivedialog3;{subject: %frank.c} {verb: have} moved.;{subject: %frank.c} {verb: avoir} déménagé.;{subject: %frank.c} {verb: zijn} verhuisd.
+InformIntention;$test=refexp-interactivedialog4;{verb: do.c} {subject: %frank} like {object: new house.n < %frank}?;Est-ce que {subject: %frank} {verb: aimer} {object: nouvelle maison.f < %frank}?;{verb: vinden.c} {subject: %frank} {object: nieuwe huis.n < %frank} leuk?
+InformIntention;$test=refexp-interactivedialog5;{subject: %frank.c} {verb: think} {object: new house.n < %frank} is beautiful.;{subject: %frank.c} {verb: penser} que {object: nouvelle maison.f < %frank} est belle.;{subject: %frank.c} {verb: vinden} {object: nieuwe huis.n < %frank} prachtig.
+;;;;
+# Sentence tests;;;;
+InformIntention;$test=multiple-complements;With {complement: gothic look < %julia}, {subject: %olivia} will get crazy with the idea of letting {object: %lili} spend the evening with {complement: %julia}!;TODO;TODO
+InformIntention;$test=splitsentence-pipes;TODO;TODO;Omdat {subject: %julia} {verb: rennen}, |{verb: moeten} {subject: %frank} ook rennen.
+InformIntention;$test=splitsentence-subjects;{subject: %julia.c} {verb: run} and {subject: %frank} {verb: walk}.;TODO;TODO
+InformIntention;$test=ghostblock-subject;{# subject: %julia}{verb: run}.;{# subject: %julia}{verb: courir}.;{# subject: %julia}{verb: rennen}.
+InformIntention;$test=ghostblock-verb;{subject: %julia.c}{#verb: run}.;{subject: %julia.c}{#verb: courir}.;{subject: %julia.c}{#verb: rennen}.
+InformIntention;$test=splitsentence-ghostsubjects;{# subject: %julia}{verb: run} and {subject: %frank} {verb: walk}.;{# subject: %julia}{verb: courir} et {subject: %frank} {verb: marcher}.;{# subject: %julia}{verb: rennen} en {subject: %frank} {verb: lopen}.
