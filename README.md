@@ -58,7 +58,7 @@ Example:
 | Predicate name | Conditions | English | French | Dutch|
 |---|---|---|---|---|
 |giveMeSomething| |Please, $task!|S'il te plait $task!| $task, alsjeblieft!|
-|brush| |brush your %argument|brosse-toi %teeth|poets je %argument|
+|brush| |brush your %argument|brosse-toi %argument|poets je %argument|
 |teeth| |teeth|les dents|tanden|
 |julia| |Julia|Julia|Julia|
 |frank| |Frank|François|Frank|
