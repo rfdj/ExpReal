@@ -47,7 +47,7 @@ The result should be Julia asking Frank to brush his teeth: 'Please, brush your 
 For more examples, have a look in the src/test/java folder.
 
 ## Authoring templates
-All templates are stored in a single file to make it easier to translate and coordinate. It's a simple CSV file with five columns:
+All templates are stored in a single file to make it easier to translate and coordinate. It's a simple CSV file with five columns (separated by semicolons):
 
 | Predicate name | Conditions | English | French | Dutch|
 |---|---|---|---|---|
