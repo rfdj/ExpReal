@@ -4,8 +4,34 @@ ExpReal ('Expressive Realizer') is a multilingual surface realizer designed for 
 
 (It is still being developed further.)
 
+# Installation
+Either clone the project or add it as a Maven dependency through [Jitpack](https://jitpack.io). For the latter option, add the following repository to your `POM` file:
+
+```
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+Then add ExpReal itself:
+
+```
+<dependencies>
+    <dependency>
+        <groupId>com.github.rfdj</groupId>
+        <artifactId>ExpReal</artifactId>
+        <version>9d4b21d7d0</version>
+    </dependency>
+</dependencies>
+```
+
+> Note: As long as there is no real release, use the first 10 characters of a commit hash to get that 'version'. Or use `master-SNAPSHOT` to always get the latest.
+
 # Usage
-To use it, add this project as a dependency and nitialize an instance of `ExpressiveActionRealizer`, passing it a filename (situated in the resources) and a language. The file contains your templates as described below. For the language, the options are `ERLanguage.ENGLISH`, `ERLanguage.FRENCH` and `ERLanguage.DUTCH`. Each instance of `ExpressiveActionRealizer` can only have one language. Create multiple instance for multiple languages.
+To use it, add this project as a dependency and initialize an instance of `ExpressiveActionRealizer`, passing it a filename (situated in the resources) and a language. The file contains your templates as described below. For the language, the options are `ERLanguage.ENGLISH`, `ERLanguage.FRENCH` and `ERLanguage.DUTCH`. Each instance of `ExpressiveActionRealizer` can only have one language. Create multiple instance for multiple languages.
 
 ```
 ExpressiveActionRealizer(String fileName, ERLanguage language)
