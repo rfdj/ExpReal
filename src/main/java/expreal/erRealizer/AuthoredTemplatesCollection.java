@@ -2,12 +2,8 @@ package expreal.erRealizer;
 
 import expreal.erElements.ERLanguage;
 import org.tinylog.Logger;
-import sun.rmi.runtime.Log;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -33,6 +29,44 @@ public class AuthoredTemplatesCollection {
      * @param language the language for selecting the authoredTexts
      */
     public AuthoredTemplatesCollection(String fileName, ERLanguage language) throws IOException {
+        InputStream fis = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+
+        if (fis == null) {
+            Logger.tag("ATC").error("Could not get author file as resource: {}", fileName);
+            return;
+        }
+
+        BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(fis, StandardCharsets.UTF_8));
+
+        readCollection(bufferedReader, language);
+    }
+
+
+    /**
+     * Constructor.
+     * Builds the internal text data from the spreadsheet.
+     *
+     * @param file     the CSV file with the authored texts
+     * @param language the language for selecting the authoredTexts
+     */
+    public AuthoredTemplatesCollection(File file, ERLanguage language) throws IOException {
+        if (file != null) {
+            if (!file.exists()) {
+                Logger.tag("ATC").error("Could not get author file as file: {}", file.getAbsolutePath());
+                return;
+            }
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            readCollection(bufferedReader, language);
+        }
+    }
+
+    /**
+     * Read the authored texts file.
+     *
+     * @param bufferedReader the reader containing the authored texts file
+     */
+    public void readCollection(BufferedReader bufferedReader, ERLanguage language) {
         String currentLine;
         int lineIndex = 0;
         String currentKey;
@@ -40,18 +74,8 @@ public class AuthoredTemplatesCollection {
         textData = new Hashtable<>();
 
 
-        InputStream fis = getClass().getClassLoader().getResourceAsStream(fileName);
-
-        if (fis == null){
-            Logger.tag("ATC").error("Could not get author file as resource: {}", fileName);
-            return;
-        }
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(fis, StandardCharsets.UTF_8));
-
         try {
-            while ((currentLine = in.readLine()) != null) {
+            while ((currentLine = bufferedReader.readLine()) != null) {
                 lineIndex++;
                 String[] columns = currentLine.split(";");
 
@@ -91,7 +115,7 @@ public class AuthoredTemplatesCollection {
                 }
             }
         } catch (IOException e) {
-            Logger.tag("ATC").error("Could not read file '{}'. Exception: {}", fileName, e);
+            Logger.tag("ATC").error("Could not read authored texts file. Exception: {}", e);
         }
     }
 

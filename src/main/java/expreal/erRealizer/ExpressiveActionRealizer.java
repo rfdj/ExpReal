@@ -14,6 +14,7 @@ import simplenlg.phrasespec.SPhraseSpec;
 import simplenlg.phrasespec.VPPhraseSpec;
 import simplenlg.realiser.Realiser;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -63,10 +64,10 @@ public class ExpressiveActionRealizer {
      * Constructor.
      * Reads the author file.
      *
-     * @param fileName full name of the .csv author file.
+     * @param fileNameAsResource full name of the .csv author file.
      * @param language language for this realiser
      */
-    public ExpressiveActionRealizer(String fileName, ERLanguage language) {
+    public ExpressiveActionRealizer(String fileNameAsResource, ERLanguage language) {
         Logger.tag("EAR").debug(">\tInitializing EAR with language '{}'...", language);
         currentLanguage = language;
 
@@ -76,7 +77,31 @@ public class ExpressiveActionRealizer {
         annotatedText = new AnnotatedText(this);
 
         try {
-            authoredTemplatesCollection = new AuthoredTemplatesCollection(fileName, language);
+            authoredTemplatesCollection = new AuthoredTemplatesCollection(fileNameAsResource, language);
+            annotatedText.setAuthoredTemplatesCollection(authoredTemplatesCollection);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Constructor.
+     * Reads the author file.
+     *
+     * @param file the .csv author file.
+     * @param language language for this realiser
+     */
+    public ExpressiveActionRealizer(File file, ERLanguage language) {
+        Logger.tag("EAR").debug(">\tInitializing EAR with language '{}'...", language);
+        currentLanguage = language;
+
+        loadLexicon(language);
+
+        nlgFactory = new NLGFactory(lexicon);
+        annotatedText = new AnnotatedText(this);
+
+        try {
+            authoredTemplatesCollection = new AuthoredTemplatesCollection(file, language);
             annotatedText.setAuthoredTemplatesCollection(authoredTemplatesCollection);
         } catch (IOException e) {
             e.printStackTrace();
