@@ -21,6 +21,7 @@ InformIntention;$test=nounfeatures5;{subject: big red jacket};{subject: grande v
 InformIntention;$test=nounfeatures6;{subject: big red jacket < %frank};{subject: grande veste < %frank};{subject: grote rode jas < %frank}
 InformIntention;$test=nounfeatures7;{subject: $player} {verb: go} to $argument.;{subject: $player} {verb: aller} à $argument.;{subject: $player} {verb: gaan} naar $argument.
 NounFeatures7Argument;;$patient;$patient;$patient
+InformIntention;$test=nounfeatures8;{subject: big red jacket < $player};{subject: grande veste < $player};{subject: grote rode jas < $player}
 ;;;;
 # Test verbs;;;;
 InformIntention;$test=verbs;{subject: %pete.c} {verb: run}.;{subject: %pete.c} {verb: courir}.;{subject: %pete.c} {verb: rennen}.

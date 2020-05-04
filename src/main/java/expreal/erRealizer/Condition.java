@@ -124,7 +124,7 @@ public class Condition extends ERObject {
     private String getObjectName(ERObject object) {
         String result;
         if (object instanceof ERPerson)
-            result = ((ERPerson) object).getName();
+            result = ((ERPerson) object).getId();
         else if (object instanceof Condition)
             result = ((Condition) object).getFirstOperand();
         else

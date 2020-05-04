@@ -115,4 +115,23 @@ public class NounFeatureTest extends TestHelper {
         testFrenchPredicate(predicate, context, "grande veste de Frank");
         testDutchPredicate(predicate, context, "Frank's grote rode jas");
     }
+    /**
+     * Test with the main noun being replaced by $variable.
+     */
+    @Test
+    public void unmarkedNounWithOwnerByIdTest() {
+        Vector<ERArgument> arguments = new Vector<>();
+        arguments.add(new ERArgument("test", "nounfeatures8"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        String[] johnNames = new String[3];
+        johnNames[0] = "John";
+        johnNames[1] = "Jean";
+        johnNames[2] = "Jan";
+        context.addPerson(new ERPerson("player", ERGender.MASCULINE, johnNames, null));
+
+        testEnglishPredicate(predicate, context, "John's big, red jacket");
+        testFrenchPredicate(predicate, context, "grande veste de Jean");
+        testDutchPredicate(predicate, context, "Jan's grote rode jas");
+    }
 }
