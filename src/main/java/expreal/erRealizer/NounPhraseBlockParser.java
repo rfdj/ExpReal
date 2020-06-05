@@ -96,7 +96,7 @@ public class NounPhraseBlockParser {
                 mainNounString = mainNounString.substring(1);
 
                 if (mainNounString.contains("*")) {
-                    String attribute = context.getPerson(mainNounString).getName();
+                    String attribute = context.getPerson(mainNounString).getId();
                     if (attribute == null) {
                         Logger.tag("NPBP").error("Attribute '{}' not found in the context: {}", mainNounString, context);
                         return this;
@@ -143,7 +143,7 @@ public class NounPhraseBlockParser {
                 ownerNounString = ownerNounString.substring(1);
 
                 if (ownerNounString.contains("*")) {
-                    String attribute = context.getPerson(ownerNounString).getName();
+                    String attribute = context.getPerson(ownerNounString).getId();
                     if (attribute == null) {
                         Logger.tag("NPBP").error("Attribute (owner noun) '{}' not found in context: {}", ownerNounString, context);
                         return this;

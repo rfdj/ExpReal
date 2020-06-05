@@ -191,8 +191,8 @@ class ReferringExpressionGenerator {
      */
     void setPronominalFeatures(ERContext context, NPPhraseSpec nounPhrase, String nounString) {
         if (context != null) {
-            String speakerString = context.getSpeaker().getName();
-            String listenerString = context.getListener().getName();
+            String speakerString = context.getSpeaker().getId();
+            String listenerString = context.getListener().getId();
 
             if (nounString.toLowerCase()
                     .equals(speakerString.toLowerCase())) {

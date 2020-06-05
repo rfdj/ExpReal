@@ -1,9 +1,6 @@
 package expreal.erElements;
 
 
-import expreal.erElements.ERArgument;
-import expreal.erElements.ERObject;
-import expreal.erElements.ERPerson;
 import expreal.erRealizer.Condition;
 import org.tinylog.Logger;
 
@@ -37,7 +34,7 @@ public class ERContext {
     /**
      * Special people, which we might want to find quickly. There are also in the persons list.
      */
-    private ERPerson speaker, listener, player, patient;
+    private ERPerson speaker, listener;
 
     /**
      * Empty constructor.
@@ -49,23 +46,6 @@ public class ERContext {
     }
 
     /**
-     * This constructor adds the player and patient ERPersons. It also adds them to the list of all persons.
-     *
-     * @param player  the ERPerson that has the role of player
-     * @param patient th ERPerson that has the role of patient
-     */
-    public ERContext(ERPerson player, ERPerson patient) {
-        persons = new ArrayList<>();
-        arguments = new ArrayList<>();
-        userDefinedConditions = new ArrayList<>();
-
-        this.player = player;
-        this.patient = patient;
-        this.addPerson(player);
-        this.addPerson(patient);
-    }
-
-    /**
      * As a method of cloning, base this ERContext object on another ERContext object.
      *
      * @param oldContext the context on which to base the new one
@@ -73,8 +53,6 @@ public class ERContext {
     public ERContext(ERContext oldContext) {
         this.speaker = oldContext.speaker;
         this.listener = oldContext.listener;
-        this.player = oldContext.player;
-        this.patient = oldContext.patient;
 
         this.persons = new ArrayList<>();
         this.persons = oldContext.persons;
@@ -117,7 +95,7 @@ public class ERContext {
      */
     public ERObject getObjectByKey(String key) {
         for (ERPerson person : persons) {
-            if (key.equals(person.getName()))
+            if (key.equals(person.getId()))
                 return person;
         }
         for (ERArgument argument : arguments) {
@@ -139,7 +117,7 @@ public class ERContext {
      */
     public ERPerson getPerson(String key) {
         for (ERPerson person : this.persons) {
-            if (key.equals(person.getName()))
+            if (key.equals(person.getId()))
                 return person;
         }
         return null;
@@ -200,22 +178,6 @@ public class ERContext {
         this.listener = listener;
     }
 
-    public ERPerson getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(ERPerson player) {
-        this.player = player;
-    }
-
-    public ERPerson getPatient() {
-        return patient;
-    }
-
-    public void setPatient(ERPerson patient) {
-        this.patient = patient;
-    }
-
     public List<Condition> getUserDefinedConditions() {
         return userDefinedConditions;
     }
@@ -227,8 +189,8 @@ public class ERContext {
 
     @Override
     public String toString() {
-        return String.format("ERContext{speaker: %s, listener: %s, player: %s, patient: %s, " +
+        return String.format("ERContext{speaker: %s, listener: %s, " +
                         "persons: %s, arguments: %s, userDefinedConditions: %s}",
-                speaker, listener, player, patient, persons, arguments, userDefinedConditions);
+                speaker, listener, persons, arguments, userDefinedConditions);
     }
 }

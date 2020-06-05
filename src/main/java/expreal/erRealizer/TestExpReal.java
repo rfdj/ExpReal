@@ -24,7 +24,7 @@ public class TestExpReal {
         ERPerson player = new ERPerson("julia", ERGender.FEMININE);
         ERPerson patient = new ERPerson("frank", ERGender.MASCULINE);
 
-        ERContext context = new ERContext(player, patient);
+        ERContext context = new ERContext();
         context.setSpeaker(player);
         context.setListener(patient);
 

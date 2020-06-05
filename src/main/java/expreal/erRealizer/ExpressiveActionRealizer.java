@@ -484,6 +484,14 @@ public class ExpressiveActionRealizer {
     }
 
     /**
+     * Return the language used in this instance
+     * @return the language
+     */
+    public ERLanguage getCurrentLanguage() {
+        return currentLanguage;
+    }
+
+    /**
      * Return type that contains the string marking the entire input blockString that needs to be replaced and optionally
      * a string with which to replace the blockString.
      */

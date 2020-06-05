@@ -1,9 +1,6 @@
 package expreal.erRealizer;
 
-import expreal.erElements.ERArgument;
-import expreal.erElements.ERContext;
-import expreal.erElements.ERObject;
-import expreal.erElements.ERPerson;
+import expreal.erElements.*;
 import org.tinylog.Logger;
 
 import java.util.Map;
@@ -43,13 +40,22 @@ public class AnnotatedText {
         // The following feature (now discarded) allowed to have elements' names with spaces (but it prevented the use of _). This is on longer possible.
         //element = element.replace('_', ' ');
 
+        // Retrieve realised name if applicable
+        if (localContext.getPerson(element) != null) {
+            if (localContext.getPerson(element).hasRealisedNames()) {
+                ERLanguage currentLanguage = expressiveActionRealizer.getCurrentLanguage();
+                Logger.tag("AT").debug("Used realised name for element: {}", element);
+                return localContext.getPerson(element).getRealisedName(currentLanguage.ordinal());
+            }
+        }
+
         /* retrieval of all texts corresponding to the element */
         if (authoredTemplatesCollection == null)
             return "";
 
         Vector<ConditionalAnnotatedText> condTexts = authoredTemplatesCollection.getConditionalAnnotatedTexts(element);
         if (condTexts == null) {
-            Logger.tag("AT").error("No text found for element: {}", element);
+            Logger.tag("AT").error("No text found for element: '{}'", element);
             return "";
         }
         Logger.tag("AT").debug("All (unverified) conditional annotated texts: {}", condTexts);
@@ -291,7 +297,7 @@ public class AnnotatedText {
 
                     String replacementString = "";
                     if (instantiatedValue instanceof ERPerson) {
-                        replacementString = ((ERPerson) instantiatedValue).getName();
+                        replacementString = ((ERPerson) instantiatedValue).getId();
                     } else {
                         replacementString = ((ERArgument) instantiatedValue).getValue();
                     }
@@ -360,9 +366,9 @@ public class AnnotatedText {
 
                 String at = "";
                 if (currentVariableString.equals("speaker")) {
-                    at = this.selectAnnotatedText(context.getSpeaker().getName(), context);
+                    at = this.selectAnnotatedText(context.getSpeaker().getId(), context);
                 } else if (currentVariableString.equals("listener")) {
-                    at = this.selectAnnotatedText(context.getListener().getName(), context);
+                    at = this.selectAnnotatedText(context.getListener().getId(), context);
                 } else if (context.getArgument(currentVariableString) != null) {
                     String argumentValue = context.getArgument(currentVariableString).getValue();
                     at = this.selectAnnotatedText(argumentValue, context);
