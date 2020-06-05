@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class ERPerson extends ERObject {
 
     /**
-     * The name or the person, as written in the texts.csv file.
+     * The name of the person, as written in the texts.csv file.
      */
     String id;
 
@@ -43,6 +43,19 @@ public class ERPerson extends ERObject {
     public ERPerson(String id, ERGender gender) {
         this.id = id;
         this.gender = gender;
+    }
+
+    /**
+     * Persons can have an ID to be used in the CSV, but have realised names to replace that.
+     * 
+     * @param id the ID as used in the CSV file
+     * @param gender the gender
+     * @param realisedNames a list of names, as they should be realised for each language
+     */
+    public ERPerson(String id, ERGender gender, String[] realisedNames) {
+        this.id = id;
+        this.gender = gender;
+        this.realisedNames = realisedNames;
     }
 
     /**
