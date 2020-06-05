@@ -23,7 +23,7 @@ Then add ExpReal itself:
     <dependency>
         <groupId>com.github.rfdj</groupId>
         <artifactId>ExpReal</artifactId>
-        <version>9d4b21d7d0</version>
+        <version>5511e38362</version>
     </dependency>
 </dependencies>
 ```
