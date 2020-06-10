@@ -5,6 +5,7 @@ import expreal.erRealizer.Condition;
 import org.tinylog.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -118,6 +119,21 @@ public class ERContext {
     public ERPerson getPerson(String key) {
         for (ERPerson person : this.persons) {
             if (key.equals(person.getId()))
+                return person;
+        }
+        return null;
+    }
+
+    /**
+     * Retrieve a person from the context based on the realised name. Realised name can be in any language.
+     *
+     * @param key the string (realisedName) of the person to retrieve
+     * @return the person with the key as realised name
+     */
+    public ERPerson getPersonByRealisedName(String key) {
+        for (ERPerson person : this.persons) {
+            List<String> names = Arrays.asList(person.getRealisedNames());
+            if (names.contains(key))
                 return person;
         }
         return null;

@@ -363,12 +363,16 @@ public class AnnotatedText {
                     Logger.tag("AT").error("Variable is empty in text: {}", this);
                     break;
                 }
+                System.out.println(" new annotatedtext");
 
                 String at = "";
                 if (currentVariableString.equals("speaker")) {
                     at = this.selectAnnotatedText(context.getSpeaker().getId(), context);
                 } else if (currentVariableString.equals("listener")) {
                     at = this.selectAnnotatedText(context.getListener().getId(), context);
+                } else if (context.getPersonByRealisedName(currentVariableString) != null) {
+                    at = context.getPersonByRealisedName(currentVariableString).getRealisedName(
+                            expressiveActionRealizer.getCurrentLanguage().ordinal());
                 } else if (context.getArgument(currentVariableString) != null) {
                     String argumentValue = context.getArgument(currentVariableString).getValue();
                     at = this.selectAnnotatedText(argumentValue, context);
