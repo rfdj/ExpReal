@@ -363,7 +363,6 @@ public class AnnotatedText {
                     Logger.tag("AT").error("Variable is empty in text: {}", this);
                     break;
                 }
-                System.out.println(" new annotatedtext");
 
                 String at = "";
                 if (currentVariableString.equals("speaker")) {
