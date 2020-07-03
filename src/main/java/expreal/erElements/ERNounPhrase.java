@@ -175,7 +175,8 @@ public class ERNounPhrase extends NPPhraseSpec implements ERPhraseElement {
     public void addPremodifiers(String premodifierString) {
         for (String preMod : premodifierString.split(" ")) {
             if (!preMod.equals("")) {
-                if (lexicon.getWord(preMod).isA(LexicalCategory.DETERMINER))
+                if (lexicon.getWord(preMod).isA(LexicalCategory.DETERMINER)
+                        || lexicon.getWordFromVariant(preMod).isA(LexicalCategory.DETERMINER))
                     this.setSpecifier(preMod);
                 else
                     this.addPreModifier(preMod);
