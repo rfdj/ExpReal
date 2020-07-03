@@ -2,6 +2,7 @@ package expreal.erRealizer;
 
 import expreal.erElements.ERContext;
 import expreal.erElements.ERMentionedEntity;
+import expreal.erElements.ERPerson;
 import simplenlg.features.Feature;
 import simplenlg.features.Person;
 import simplenlg.phrasespec.NPPhraseSpec;
@@ -185,25 +186,44 @@ class ReferringExpressionGenerator {
     /**
      * Sets noun phrase to be pronominal if the person is speaking or listening.
      *
-     * @param context    the #speaker or #listener from the context
+     * @param context    the context with the $speaker or $listener
      * @param nounPhrase the noun phrase to update
      * @param nounString the person being checked for their role
      */
     void setPronominalFeatures(ERContext context, NPPhraseSpec nounPhrase, String nounString) {
         if (context != null) {
-            String speakerString = context.getSpeaker().getId();
-            String listenerString = context.getListener().getId();
 
-            if (nounString.toLowerCase()
-                    .equals(speakerString.toLowerCase())) {
+            if (isEqualToPerson(nounString, context.getSpeaker())) {
                 nounPhrase.setFeature(Feature.PERSON, Person.FIRST); //THIRD by default
                 nounPhrase.setFeature(Feature.PRONOMINAL, true); //false by default
-            } else if (nounString.toLowerCase()
-                    .equals(listenerString.toLowerCase())) {
+            } else if (isEqualToPerson(nounString, context.getListener())) {
                 nounPhrase.setFeature(Feature.PERSON, Person.SECOND);
                 nounPhrase.setFeature(Feature.PRONOMINAL, true); //false by default
             }
         }
+    }
+
+    /**
+     * Checks if the nounString matches either the id or a realised name of the ERPerson.
+     *
+     * @param nounString the nounString to check
+     * @param person     the person to match it to
+     * @return true if the nounString is equal to the person
+     */
+    private boolean isEqualToPerson(String nounString, ERPerson person) {
+        nounString = nounString.toLowerCase();
+        String id = person.getId().toLowerCase();
+
+        if (nounString.equals(id))
+            return true;
+
+        if (person.hasRealisedNames()) {
+            String[] names = person.getRealisedNames();
+            for (String name : names)
+                if (nounString.equalsIgnoreCase(name))
+                    return true;
+        }
+        return false;
     }
 
     /**
