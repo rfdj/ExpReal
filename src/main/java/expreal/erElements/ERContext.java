@@ -132,6 +132,9 @@ public class ERContext {
      */
     public ERPerson getPersonByRealisedName(String key) {
         for (ERPerson person : this.persons) {
+            if (person.getRealisedNames() == null)
+                return null;
+
             List<String> names = Arrays.asList(person.getRealisedNames());
             if (names.contains(key))
                 return person;
