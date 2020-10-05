@@ -6,6 +6,7 @@ pete;;Pete;Pierre;Pieter
 paul;;Paul;Paul;Paul
 lili;;Lili;Lili;Lili
 olivia;;Olivia;Olivia;Olivia
+john;;John;Jean;Jan
 ;;;;
 # Test pronouns;;;;
 InformIntention;$test=pronoun;{subject: %frank.c} {verb: be} {object: best |friend| < %julia}.;{subject: %frank.c} {verb: être} {object: le meilleur |ami| < %julia}.;{subject: %frank.c} {verb: zijn} {object: beste |vriend| < %julia}.
@@ -22,6 +23,10 @@ InformIntention;$test=nounfeatures6;{subject: big red jacket < %frank};{subject:
 InformIntention;$test=nounfeatures7;{subject: $player} {verb: go} to $argument.;{subject: $player} {verb: aller} à $argument.;{subject: $player} {verb: gaan} naar $argument.
 NounFeatures7Argument;;$patient;$patient;$patient
 InformIntention;$test=nounfeatures8;{subject: big red jacket < $player};{subject: grande veste < $player};{subject: grote rode jas < $player}
+InformIntention;$test=nounfeatures10, %john.contentedness >= 0.8;%john likes it.;%john aime ça.;%john vindt het leuk.
+InformIntention;$test=nounfeatures10, %john.contentedness < 0.5;%john hates it.;%john déteste ça.;%john haat het.
+InformIntention;$test=nounfeatures11, $player.contentedness > 0.5;$player likes it.;$player aime ça.;$player vindt het leuk.
+InformIntention;$test=nounfeatures11, $player.contentedness <= 0.5;$player hates it.;$player déteste ça.;$player haat het.
 ;;;;
 # Test verbs;;;;
 InformIntention;$test=verbs;{subject: %pete.c} {verb: run}.;{subject: %pete.c} {verb: courir}.;{subject: %pete.c} {verb: rennen}.

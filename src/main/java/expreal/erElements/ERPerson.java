@@ -32,7 +32,7 @@ public class ERPerson extends ERObject {
      * Used in conditions in the CSV file.
      * Example usage: personId.aggression > 0.3
      */
-    HashMap<String, Float> properties;
+    HashMap<String, Float> properties = new HashMap<>();
 
     /**
      * A simple person object only requires an ID and a gender.
@@ -113,6 +113,18 @@ public class ERPerson extends ERObject {
 
     public void setProperties(HashMap<String, Float> properties) {
         this.properties = properties;
+    }
+
+    public void setProperty(String key, Float value) {
+        this.properties.put(key, value);
+    }
+
+    public Float getProperty(String key) {
+        return this.properties.get(key);
+    }
+
+    public boolean hasProperty(String key) {
+        return (getProperty(key) != null);
     }
 
     public boolean updateProperty(String key, Float value) {

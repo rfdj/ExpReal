@@ -95,9 +95,18 @@ public class ERContext {
      * @return true if found, false if not
      */
     public ERObject getObjectByKey(String key) {
+        String[] keyParts = key.split("\\.");
+
         for (ERPerson person : persons) {
-            if (key.equals(person.getId()))
-                return person;
+            if (keyParts.length > 1) {
+                if (keyParts[0].replace("%", "").equals(person.getId())) {
+                    if (person.hasProperty(keyParts[1]))
+                        return person;
+                }
+            } else {
+                if (key.equals(person.getId()))
+                    return person;
+            }
         }
         for (ERArgument argument : arguments) {
             if (key.equals(argument.getName()))

@@ -9,11 +9,14 @@ import org.tinylog.Logger;
 public class Condition extends ERObject {
 
     String firstOperand;
+    String firstOperandProperty;
     String secondOperand;
     OperatorType operator;
 
     public Condition(String s) {
-        String[] twoParts = s.split("!?[=>]");
+        String[] twoParts = s.split("(\\s?=\\s?(?![<>]))" + //e.g. ' = '
+                "|(\\s!?in\\s)" +                           //or e.g. ' !in '
+                "|(\\s?[^=][<>!]=?\\s?)");                  //or e.g. ' >= '
 
         if (twoParts.length == 1 && twoParts[0].trim().startsWith("@")) {
             firstOperand = twoParts[0].replaceFirst("\\$", ""); //$ is a special character.
@@ -24,17 +27,28 @@ public class Condition extends ERObject {
         } else {
             firstOperand = twoParts[0].replaceFirst("\\$", ""); //$ is a special character.
             secondOperand = twoParts[1];
-            if (s.contains("!="))
+            if (s.contains(">="))
+                operator = OperatorType.GREATER_THAN_OR_EQUAL;
+            else if (s.contains("<="))
+                operator = OperatorType.SMALLER_THAN_OR_EQUAL;
+            else if (s.contains(">"))
+                operator = OperatorType.GREATER_THAN;
+            else if (s.contains("<"))
+                operator = OperatorType.SMALLER_THAN;
+            else if (s.contains("!="))
                 operator = OperatorType.DIFFERENCE;
             else if (s.contains("="))
                 operator = OperatorType.EQUALITY;
-            else if (s.contains("!>"))
+            else if (s.contains("!contains"))
                 operator = OperatorType.NOT_CONTAINING;
-            else if (s.contains(">"))
+            else if (s.contains("contains"))
                 operator = OperatorType.CONTAINING;
             else
-            Logger.tag("COND").error("Invalid operand in condition: {}", s);
+                Logger.tag("COND").error("Invalid operand in condition: {}", s);
         }
+
+        if (firstOperand.split("\\.").length > 1)
+            firstOperandProperty = firstOperand.split("\\.")[1];
     }
 
     /**
@@ -76,6 +90,14 @@ public class Condition extends ERObject {
                 if (object == null) return true;
                 val = getValueOfContextualObject(object);
                 return !val.equals(secondOperand);
+            case GREATER_THAN:
+                return verifyInequalityComparison(object, ">");
+            case GREATER_THAN_OR_EQUAL:
+                return verifyInequalityComparison(object, ">=");
+            case SMALLER_THAN:
+                return verifyInequalityComparison(object, "<");
+            case SMALLER_THAN_OR_EQUAL:
+                return verifyInequalityComparison(object, "<=");
             case CONTAINING:
                 if (object == null) return false;
                 val = getValueOfContextualObject(object);
@@ -104,6 +126,28 @@ public class Condition extends ERObject {
         }
     }
 
+    private boolean verifyInequalityComparison(ERObject object, String type) {
+        if (object == null) return false;
+
+        Float floatVal = getFloatValueOfContextualObject(object);
+        if (floatVal == null) return false;
+
+        float floatValSecondOperand = Float.parseFloat(secondOperand);
+
+        switch (type) {
+            case ">":
+                return floatVal > floatValSecondOperand;
+            case "<":
+                return floatVal < floatValSecondOperand;
+            case ">=":
+                return floatVal >= floatValSecondOperand;
+            case "<=":
+                return floatVal <= floatValSecondOperand;
+            default:
+                return false;
+        }
+    }
+
     private String getValueOfContextualObject(ERObject object) {
         if (object != null) {
             if (object instanceof Condition) {
@@ -113,6 +157,21 @@ public class Condition extends ERObject {
             }
         }
         return "";
+    }
+
+    /**
+     * Retrieve the float value based on the person's property.
+     *
+     * @param object the person to retrieve the property value form
+     * @return the property
+     */
+    private Float getFloatValueOfContextualObject(ERObject object) {
+        if (object != null) {
+            if (object instanceof ERPerson) {
+                return ((ERPerson) object).getProperty(firstOperandProperty);
+            }
+        }
+        return null;
     }
 
     /**
@@ -144,6 +203,6 @@ public class Condition extends ERObject {
         return firstOperand + operator + secondOperand;
     }
 
-    public enum OperatorType {EQUALITY, DIFFERENCE, CONTAINING, NOT_CONTAINING}
+    public enum OperatorType {EQUALITY, DIFFERENCE, GREATER_THAN, SMALLER_THAN, GREATER_THAN_OR_EQUAL, SMALLER_THAN_OR_EQUAL, CONTAINING, NOT_CONTAINING}
 
 }

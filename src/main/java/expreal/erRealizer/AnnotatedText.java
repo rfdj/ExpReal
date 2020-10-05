@@ -61,11 +61,9 @@ public class AnnotatedText {
         Logger.tag("AT").debug("All (unverified) conditional annotated texts: {}", condTexts);
 
         Vector<ConditionalAnnotatedText> filteredCondTexts = getVerifiedConditionalTexts(condTexts, localContext);
-
         Logger.tag("AT").debug("Verified conditional annotated texts: {}", filteredCondTexts);
 
         Vector<ConditionalAnnotatedText> specificCondTexts = getMostSpecificTexts(filteredCondTexts);
-
         Logger.tag("AT").debug("Most specific conditional annotated text: {}", specificCondTexts);
 
         /* filtering out recently used entries */

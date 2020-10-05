@@ -115,6 +115,7 @@ public class NounFeatureTest extends TestHelper {
         testFrenchPredicate(predicate, context, "grande veste de Frank");
         testDutchPredicate(predicate, context, "Frank's grote rode jas");
     }
+
     /**
      * Test with the main noun being replaced by $variable.
      */
@@ -133,5 +134,60 @@ public class NounFeatureTest extends TestHelper {
         testEnglishPredicate(predicate, context, "John's big, red jacket");
         testFrenchPredicate(predicate, context, "grande veste de Jean");
         testDutchPredicate(predicate, context, "Jan's grote rode jas");
+    }
+
+    /**
+     * Test with the a known person having an emotion value on either side of a threshold.
+     */
+    @Test
+    public void nounWithEmotionValueTest() {
+        Vector<ERArgument> arguments = new Vector<>();
+        arguments.add(new ERArgument("test", "nounfeatures10"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        ERPerson john = new ERPerson("john", ERGender.MASCULINE);
+        john.setProperty("contentedness", 0.8f);
+
+        context.addPerson(john);
+
+        testEnglishPredicate(predicate, context, "John likes it.");
+        testFrenchPredicate(predicate, context, "Jean aime ça.");
+        testDutchPredicate(predicate, context, "Jan vindt het leuk.");
+
+        john.setProperty("contentedness", 0.3f);
+
+        testEnglishPredicate(predicate, context, "John hates it.");
+        testFrenchPredicate(predicate, context, "Jean déteste ça.");
+        testDutchPredicate(predicate, context, "Jan haat het.");
+    }
+
+    /**
+     * Test with the player character having an emotion value on either side of a threshold.
+     */
+    @Test
+    public void playerWithEmotionValueTest() {
+        Vector<ERArgument> arguments = new Vector<>();
+        arguments.add(new ERArgument("test", "nounfeatures11"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        String[] johnNames = new String[3];
+        johnNames[0] = "John";
+        johnNames[1] = "Jean";
+        johnNames[2] = "Jan";
+
+        ERPerson john = new ERPerson("player", ERGender.MASCULINE, johnNames);
+        john.setProperty("contentedness", 0.8f);
+
+        context.addPerson(john);
+
+        testEnglishPredicate(predicate, context, "John likes it.");
+        testFrenchPredicate(predicate, context, "Jean aime ça.");
+        testDutchPredicate(predicate, context, "Jan vindt het leuk.");
+
+        john.setProperty("contentedness", 0.3f);
+
+        testEnglishPredicate(predicate, context, "John hates it.");
+        testFrenchPredicate(predicate, context, "Jean déteste ça.");
+        testDutchPredicate(predicate, context, "Jan haat het.");
     }
 }
