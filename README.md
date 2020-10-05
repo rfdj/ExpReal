@@ -23,12 +23,14 @@ Then add ExpReal itself:
     <dependency>
         <groupId>com.github.rfdj</groupId>
         <artifactId>ExpReal</artifactId>
-        <version>5511e38362</version>
+        <version>c894e361e0</version>
     </dependency>
 </dependencies>
 ```
 
 > Note: As long as there is no real release, use the first 10 characters of a commit hash to get that 'version'. Or use `master-SNAPSHOT` to always get the latest.
+
+> You can also easily pick a different version by going to [Jitpack](https://jitpack.io/#rfdj/ExpReal/) and clicking the `Get it` button next to the preferred commit. That will build the project (if not already done so) and give you the commit hash (and example maven code) for it.
 
 # Usage
 To use it, add this project as a dependency and initialize an instance of `ExpressiveActionRealizer`, passing it a filename (situated in the resources) and a language. The file contains your templates as described below. For the language, the options are `ERLanguage.ENGLISH`, `ERLanguage.FRENCH` and `ERLanguage.DUTCH`. Each instance of `ExpressiveActionRealizer` can only have one language. Create multiple instance for multiple languages.
@@ -105,6 +107,21 @@ Example:
 ``` 
 
 This can result in `Julia likes eating fries.` or `I like eating fries.` or even `You like eating fries.` based on the context.
+
+## Conditions
+The second column in the template file is reserved for conditions. The template with the largest number of met conditions is picked for the realisation.
+
+ExpReal has the following condition types:
+
+* `$contextVar = someString` with `$contextVar` being defined as an `ERArgument` in the `ERPredicate`.
+* `$player = %john`
+* `$player.aggression >= 0.5` gives you access to the properties of an `ERPerson` set by `myErPerson.addProperty("arbitraryName", 0.0f)` with the value being a Flaot. Allowed operators: `<`, `>`, `<=`, `>=`.
+* `@overridingFlag` gives this template the highest priority to be chosen.
+
+You can add multiple conditions to one template. Separate them with a comma.
+
+
+For examples, check out the [unit tests](https://github.com/rfdj/ExpReal/tree/master/src/test/java) and the accompanying [test templates](https://github.com/rfdj/ExpReal/blob/master/src/test/resources/Tests.csv)
 
 # License
 ExpReal is released under the Apache 2.0 license. See the LICENSE file for details.
