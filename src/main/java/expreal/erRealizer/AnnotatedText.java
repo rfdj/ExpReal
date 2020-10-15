@@ -322,7 +322,23 @@ public class AnnotatedText {
                             replacementString = at;
                         }
 
-                        newString = newString.replace("$" + currentArgString, replacementString);
+                        String targetString = currentArgString;
+                        if (newString.substring(0, currentDollarIndex).endsWith(" de ")
+                                && expressiveActionRealizer.startsWithVowelOrIsolatedY(replacementString)) {
+                            targetString =      " de $" + currentArgString;
+                            replacementString = " d'" + replacementString;
+                        } else if (newString.substring(0, currentDollarIndex).endsWith(" à ")) {
+                            if (replacementString.startsWith("le ")) {
+                                targetString =      " à $" + currentArgString;
+                                replacementString = " au " + replacementString.substring(3);
+                            } else if (replacementString.startsWith("les ")) {
+                                targetString =      " à $" + currentArgString;
+                                replacementString = " aux " + replacementString.substring(4);
+                            }
+                        } else {
+                            targetString = "$" + currentArgString;
+                        }
+                        newString = newString.replace(targetString, replacementString);
                     }
                     currentIndex = currentDollarIndex + replacementString.length();
 

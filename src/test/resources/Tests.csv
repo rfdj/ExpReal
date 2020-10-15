@@ -27,6 +27,12 @@ InformIntention;$test=nounfeatures10, %john.contentedness >= 0.8;%john likes it.
 InformIntention;$test=nounfeatures10, %john.contentedness < 0.5;%john hates it.;%john déteste ça.;%john haat het.
 InformIntention;$test=nounfeatures11, $player.contentedness > 0.5;$player likes it.;$player aime ça.;$player vindt het leuk.
 InformIntention;$test=nounfeatures11, $player.contentedness <= 0.5;$player hates it.;$player déteste ça.;$player haat het.
+InformIntention;$test=noun-contraction-ale;none;Aller à {indirectobject: $location}.;none
+InformIntention;$test=noun-contraction-dele;none;En direction de {indirectobject: $location}.;none
+InformIntention;$test=noun-contraction-variable;none;Aller à $location.;none
+salon;;the salon;le salon;de salon
+InformIntention;$test=noun-elision;none;Ca te dirait de $task?;none
+goSomewhere;;go;aller;gaan
 ;;;;
 # Test verbs;;;;
 InformIntention;$test=verbs;{subject: %pete.c} {verb: run}.;{subject: %pete.c} {verb: courir}.;{subject: %pete.c} {verb: rennen}.

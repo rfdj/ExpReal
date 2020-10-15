@@ -36,7 +36,7 @@ public class ERNounPhrase extends NPPhraseSpec implements ERPhraseElement {
         WordElement head = lexicon.getWord(personName, LexicalCategory.NOUN);
         if (personGender != null)
             head.setFeature(LexicalFeature.GENDER, personGender);
-        else
+        else if (!head.hasFeature(LexicalFeature.GENDER))
             head.setFeature(LexicalFeature.GENDER, Gender.MASCULINE);
         this.setHead(head);
     }

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 
 /**
@@ -65,7 +66,7 @@ public class ExpressiveActionRealizer {
      * Reads the author file.
      *
      * @param fileNameAsResource full name of the .csv author file.
-     * @param language language for this realiser
+     * @param language           language for this realiser
      */
     public ExpressiveActionRealizer(String fileNameAsResource, ERLanguage language) {
         Logger.tag("EAR").debug(">\tInitializing EAR with language '{}'...", language);
@@ -88,7 +89,7 @@ public class ExpressiveActionRealizer {
      * Constructor.
      * Reads the author file.
      *
-     * @param file the .csv author file.
+     * @param file     the .csv author file.
      * @param language language for this realiser
      */
     public ExpressiveActionRealizer(File file, ERLanguage language) {
@@ -274,15 +275,105 @@ public class ExpressiveActionRealizer {
             if (parsedBlock.isGhostBlock) {
                 result = result.replace(parsedBlock.blockString, "");
             } else {
-                if (parsedBlock.doCapitalise)
-                    result = result.replace(parsedBlock.blockString, capitalise(parsedBlock.replacementString));
-                else
-                    result = result.replace(parsedBlock.blockString, parsedBlock.replacementString);
+                result = finaliseRealisation(parsedBlock, result);
             }
         }
         Logger.tag("EAR").debug("Interpreted grammatical clause result: {}", result);
 
         return result;
+    }
+
+    /**
+     * Perform the final realisation of a parsed block, such as capitalisation and elision for French if the canned text
+     * contains certain characters.
+     *
+     * @param parsedBlock the parsedBlock that will be realised
+     * @param result      the clause to which to add the realisation
+     * @return the resulting clause
+     */
+    private String finaliseRealisation(ParseInputBlockReturn parsedBlock, String result) {
+
+        result = checkContractionAndElision(parsedBlock, result);
+
+        if (parsedBlock.doCapitalise)
+            result = capitalise(result);
+
+        return result;
+    }
+
+    /**
+     * Check and perform elision.
+     *
+     * @param parsedBlock the parsed block
+     * @param result      the result to update
+     * @return the result with the realised parsedBlock, elided if necessary
+     */
+    private String checkContractionAndElision(ParseInputBlockReturn parsedBlock, String result) {
+        if (currentLanguage != ERLanguage.FRENCH || result.indexOf(parsedBlock.blockString) <= 0) {
+            return result.replace(parsedBlock.blockString, parsedBlock.replacementString);
+        }
+
+        String precedingCannedText = result.split(Pattern.quote(parsedBlock.blockString))[0];
+
+        if (precedingCannedText.endsWith(" à ")) {
+            result = handleStringStartingWithLeOrLes(parsedBlock, result, " à ", " au ", " aux ");
+
+        } else if (precedingCannedText.endsWith(" de ")
+                && !parsedBlock.type.equals("object")) {
+            result = handleStringStartingWithLeOrLes(parsedBlock, result, " de ", " du ", " des ");
+
+        } else if (startsWithVowelOrIsolatedY(parsedBlock.replacementString)
+                && precedingCannedText.endsWith(" de")) {
+            result = contractWithCannedText(parsedBlock, result, " de", "", "d'");
+        }
+
+        result = result.replace(parsedBlock.blockString, parsedBlock.replacementString);
+        return result;
+    }
+
+    /**
+     * Check whether the replacementString starts with 'le' or 'les' and handle accordingly w.r.t. contraction.
+     *
+     * @param parsedBlock         the parsedBlock
+     * @param result              the resulting string, which might get replaced
+     * @param cannedTextSuffix    the string to find in the last part of the canned text
+     * @param contractionSingular the singular form of the required contraction
+     * @param contractionPlural   the plural form of the required contraction
+     * @return the resulting string, which has the contracted form if applicable
+     */
+    private String handleStringStartingWithLeOrLes(ParseInputBlockReturn parsedBlock, String result,
+                                                   String cannedTextSuffix, String contractionSingular, String contractionPlural) {
+        if (parsedBlock.replacementString.startsWith("le ")) {
+            result = contractWithCannedText(parsedBlock, result, cannedTextSuffix, "le ", contractionSingular);
+        } else if (parsedBlock.replacementString.startsWith("les ")) {
+            result = contractWithCannedText(parsedBlock, result, cannedTextSuffix, "les ", contractionPlural);
+        }
+        return result;
+    }
+
+    /**
+     * Replace the last part of the canned text that precedes the grammatical block.
+     *
+     * @param parsedBlock      the parsedBlock
+     * @param result           the resulting string, which will be replaced
+     * @param cannedTextSuffix the last part of the canned text
+     * @param blockPrefix      the first part of the realised parsedBlock
+     * @param contractedForm   the string to replace the above two strings. The 'sum' of suf+pref=contractedForm
+     * @return the string with the contraction
+     */
+    private String contractWithCannedText(ParseInputBlockReturn parsedBlock, String result, String cannedTextSuffix, String blockPrefix, String contractedForm) {
+        return result.replace(cannedTextSuffix + parsedBlock.blockString, parsedBlock.replacementString.replace(blockPrefix, contractedForm));
+    }
+
+    /**
+     * Checks whether the provided string starts with a vowel or an isolated "y" (being a word on its own in French).
+     *
+     * @param checkString the string to check
+     * @return true if the string starts with vowel or "y "
+     */
+    public boolean startsWithVowelOrIsolatedY(String checkString) {
+        String vowels = "aeiou";
+        return (vowels.indexOf(Character.toLowerCase(checkString.charAt(0))) != -1 || checkString.startsWith("y "));
     }
 
     /**
@@ -485,6 +576,7 @@ public class ExpressiveActionRealizer {
 
     /**
      * Return the language used in this instance
+     *
      * @return the language
      */
     public ERLanguage getCurrentLanguage() {

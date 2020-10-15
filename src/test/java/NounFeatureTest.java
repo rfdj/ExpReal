@@ -190,4 +190,61 @@ public class NounFeatureTest extends TestHelper {
         testFrenchPredicate(predicate, context, "Jean déteste ça.");
         testDutchPredicate(predicate, context, "Jan haat het.");
     }
+
+
+    /**
+     * Test with French contraction of 'à le' into 'au'.
+     */
+    @Test
+    public void frenchContractionALeTest() {
+        context.clearArguments();
+        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        arguments.add(new ERArgument("test", "noun-contraction-ale"));
+        arguments.add(new ERArgument("location", "salon"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        testFrenchPredicate(predicate, context, "Aller au salon.");
+    }
+
+    /**
+     * Test with French contraction of 'de le' into 'du'.
+     */
+    @Test
+    public void frenchContractionDeLeTest() {
+        context.clearArguments();
+        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        arguments.add(new ERArgument("test", "noun-contraction-dele"));
+        arguments.add(new ERArgument("location", "salon"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        testFrenchPredicate(predicate, context, "En direction du salon.");
+    }
+
+    /**
+     * Test with French contraction of 'à le' into 'au' while using a plain $variable instead of grammatical block.
+     */
+    @Test
+    public void frenchContractionVariableTest() {
+        context.clearArguments();
+        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        arguments.add(new ERArgument("test", "noun-contraction-variable"));
+        arguments.add(new ERArgument("location", "salon"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        testFrenchPredicate(predicate, context, "Aller au salon.");
+    }
+
+    /**
+     * Test with French elision.
+     */
+    @Test
+    public void frenchElisionTest() {
+        context.clearArguments();
+        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        arguments.add(new ERArgument("test", "noun-elision"));
+        arguments.add(new ERArgument("task", "goSomewhere"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        testFrenchPredicate(predicate, context, "Ca te dirait d'aller?");
+    }
 }
