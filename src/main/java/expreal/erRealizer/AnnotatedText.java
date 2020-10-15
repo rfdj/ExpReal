@@ -334,6 +334,8 @@ public class AnnotatedText {
                             } else if (replacementString.startsWith("les ")) {
                                 targetString =      " à $" + currentArgString;
                                 replacementString = " aux " + replacementString.substring(4);
+                            } else {
+                                targetString = "$" + currentArgString;
                             }
                         } else {
                             targetString = "$" + currentArgString;
