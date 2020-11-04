@@ -16,7 +16,7 @@ public class Condition extends ERObject {
     public Condition(String s) {
         String[] twoParts = s.split("(\\s?=\\s?(?![<>]))" + //e.g. ' = '
                 "|(\\s!?in\\s)" +                           //or e.g. ' !in '
-                "|(\\s?[^=][<>!]=?\\s?)");                  //or e.g. ' >= '
+                "|(\\s?(?=[^=])[<>!]=?\\s?)");              //or e.g. ' >= '
 
         if (twoParts.length == 1 && twoParts[0].trim().startsWith("@")) {
             firstOperand = twoParts[0].replaceFirst("\\$", ""); //$ is a special character.
