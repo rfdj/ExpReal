@@ -37,16 +37,10 @@ public class AnnotatedText {
      */
     String selectAnnotatedText(String element, ERContext localContext) {
 
-        // The following feature (now discarded) allowed to have elements' names with spaces (but it prevented the use of _). This is on longer possible.
-        //element = element.replace('_', ' ');
-
         // Retrieve realised name if applicable
-        if (localContext.getPerson(element) != null) {
-            if (localContext.getPerson(element).hasRealisedNames()) {
-                ERLanguage currentLanguage = expressiveActionRealizer.getCurrentLanguage();
-                Logger.tag("AT").debug("Used realised name for element: {}", element);
-                return localContext.getPerson(element).getRealisedName(currentLanguage.ordinal());
-            }
+        ERPerson person = localContext.getPerson(element);
+        if (person != null && person.hasRealisedNames()) {
+            return getRealisedNameForPerson(person);
         }
 
         /* retrieval of all texts corresponding to the element */
@@ -61,13 +55,7 @@ public class AnnotatedText {
         Logger.tag("AT").debug("All (unverified) conditional annotated texts: {}", condTexts);
 
         Vector<ConditionalAnnotatedText> filteredCondTexts = getVerifiedConditionalTexts(condTexts, localContext);
-        Logger.tag("AT").debug("Verified conditional annotated texts: {}", filteredCondTexts);
-
         Vector<ConditionalAnnotatedText> specificCondTexts = getMostSpecificTexts(filteredCondTexts);
-        Logger.tag("AT").debug("Most specific conditional annotated text: {}", specificCondTexts);
-
-        /* filtering out recently used entries */
-        //TODO
 
         if (specificCondTexts.isEmpty()) {
             Logger.tag("AT").error("No text to select from."
@@ -81,6 +69,12 @@ public class AnnotatedText {
         ConditionalAnnotatedText selectedCAT = specificCondTexts.get(index);
 
         return selectedCAT.getAnnotatedText();
+    }
+
+    private String getRealisedNameForPerson(ERPerson person) {
+        ERLanguage currentLanguage = expressiveActionRealizer.getCurrentLanguage();
+        Logger.tag("AT").debug("Used realised name for element: {}", person);
+        return person.getRealisedName(currentLanguage.ordinal());
     }
 
 
@@ -98,6 +92,8 @@ public class AnnotatedText {
             if (currentCat.verifiedCondition(localContext))
                 filteredCondTexts.add(currentCat);
         }
+
+        Logger.tag("AT").debug("Verified conditional annotated texts: {}", filteredCondTexts);
         return filteredCondTexts;
     }
 
@@ -108,7 +104,7 @@ public class AnnotatedText {
      * @return the most specific text, with the most (important) conditions met
      */
     private Vector<ConditionalAnnotatedText> getMostSpecificTexts(Vector<ConditionalAnnotatedText> filteredCondTexts) {
-        int currentSpecifity;
+        int currentSpecificity;
         int maxSpecificity = 0;
         boolean hasUserDefinedCondition = false;
         Vector<ConditionalAnnotatedText> specificCondTexts = new Vector<>();
@@ -124,16 +120,18 @@ public class AnnotatedText {
 
             // Otherwise, use specificity to determine which text to use
             if (!hasUserDefinedCondition) {
-                currentSpecifity = currentCat.getSpecificity();
-                if (currentSpecifity > maxSpecificity) {
+                currentSpecificity = currentCat.getSpecificity();
+                if (currentSpecificity > maxSpecificity) {
                     specificCondTexts.clear();
                     specificCondTexts.add(currentCat);
-                    maxSpecificity = currentSpecifity;
-                } else if (currentSpecifity == maxSpecificity) {
+                    maxSpecificity = currentSpecificity;
+                } else if (currentSpecificity == maxSpecificity) {
                     specificCondTexts.add(currentCat);
                 }
             }
         }
+
+        Logger.tag("AT").debug("Most specific conditional annotated text: {}", specificCondTexts);
         return specificCondTexts;
     }
 
@@ -194,8 +192,8 @@ public class AnnotatedText {
      */
     private String interpretSentence(ERContext context, String sentence) {
         // Increment mention distance for each mentioned entity. This can be reset when new mentions are detected.
-        for (Map.Entry entry : refExpGen.mentionDistances.entrySet()) {
-            refExpGen.updateMentionDistance(entry.getKey().toString());
+        for (Map.Entry<String, ERMentionedEntity> entry : refExpGen.mentionDistances.entrySet()) {
+            refExpGen.updateMentionDistance(entry.getKey());
         }
 
         // Split sentences into subclauses if needed
@@ -262,8 +260,6 @@ public class AnnotatedText {
     private String expandDollarVariables(ERContext context, String newString) {
         int currentIndex = 0;
         int currentDollarIndex;
-        int currentSeparatorAfterDollarIndex;
-        String currentArgString;
 
         do {
             currentDollarIndex = newString.indexOf("$", currentIndex);
@@ -271,74 +267,48 @@ public class AnnotatedText {
             if (currentDollarIndex != -1) {
 
                 // Determine the length of the variable
-                currentSeparatorAfterDollarIndex = Tools.indexOf(
-                        newString, ERconstants.textVariableSeparators, currentDollarIndex + 1);
+                String textVariable = getTextVariable(newString, currentDollarIndex + 1);
+                ERObject contextObject = getObjectFromContext(context, textVariable);
 
-                if (currentSeparatorAfterDollarIndex == -1) //special case when the variable is at the end
-                    currentSeparatorAfterDollarIndex = newString.length();
-
-                // Get variable from context
-                currentArgString = newString.substring(currentDollarIndex + 1, currentSeparatorAfterDollarIndex);
-                ERObject instantiatedValue = context.getPerson(currentArgString);
-
-                if (instantiatedValue == null)
-                    instantiatedValue = context.getArgument(currentArgString);
-
-                if (instantiatedValue == null) {
+                if (contextObject == null) {
                     // Variable not found in context. Let's try it as a %variable.
                     newString = percentageVariablesToPlainText(context, newString.replace("$", "%"));
-                    currentIndex = currentDollarIndex + currentArgString.length();
+                    currentIndex = currentDollarIndex + textVariable.length();
                 } else {
                     // Build the replacement string based on the context variable,
                     // replace whitespace with underscores,
                     // replace $ with % for further processing.
 
-                    String replacementString = "";
-                    if (instantiatedValue instanceof ERPerson) {
-                        replacementString = ((ERPerson) instantiatedValue).getId();
-                    } else {
-                        replacementString = ((ERArgument) instantiatedValue).getValue();
-                    }
+                    String replacementString = getReplacementStringFromObject(contextObject);
 
-                    if (currentArgString.equals("speaker") || currentArgString.equals("listener")) {
+                    if (textVariable.equals("speaker") || textVariable.equals("listener")) {
                         // $speaker and $listener are replaced by their % variables, e.g. %julia,
                         // which will be realised later.
-                        newString = newString.replace("$" + currentArgString, "%" + replacementString);
+                        newString = newString.replace("$" + textVariable, "%" + replacementString);
                     } else {
                         refExpGen.updateMentionDistance(replacementString);
 
                         String at = this.selectAnnotatedText(replacementString, context);
 
-                        if (!at.equals("")) {
-                            if (at.contains("$")) {
-                                if (at.contains("$argument")
-                                        || at.contains("$speaker")
-                                        || at.contains("$listener")) {
-                                    at = expandDollarVariables(context, at);
-                                } else {
-                                    at = percentageVariablesToPlainText(context, at.replace("$", "%"));
-                                }
-                            }
-                            replacementString = at;
-                        }
+                        replacementString = expandAnnotatedText(context, replacementString, at);
 
-                        String targetString = currentArgString;
+                        String targetString;
                         if (newString.substring(0, currentDollarIndex).endsWith(" de ")
                                 && expressiveActionRealizer.startsWithVowelOrIsolatedY(replacementString)) {
-                            targetString =      " de $" + currentArgString;
+                            targetString = " de $" + textVariable;
                             replacementString = " d'" + replacementString;
                         } else if (newString.substring(0, currentDollarIndex).endsWith(" à ")) {
                             if (replacementString.startsWith("le ")) {
-                                targetString =      " à $" + currentArgString;
+                                targetString = " à $" + textVariable;
                                 replacementString = " au " + replacementString.substring(3);
                             } else if (replacementString.startsWith("les ")) {
-                                targetString =      " à $" + currentArgString;
+                                targetString = " à $" + textVariable;
                                 replacementString = " aux " + replacementString.substring(4);
                             } else {
-                                targetString = "$" + currentArgString;
+                                targetString = "$" + textVariable;
                             }
                         } else {
-                            targetString = "$" + currentArgString;
+                            targetString = "$" + textVariable;
                         }
                         newString = newString.replace(targetString, replacementString);
                     }
@@ -351,6 +321,47 @@ public class AnnotatedText {
         return newString;
     }
 
+    private String expandAnnotatedText(ERContext context, String replacementString, String at) {
+        String result = replacementString;
+        if (!at.equals("")) {
+            if (at.contains("$")) {
+                if (at.contains("$argument")
+                        || at.contains("$speaker")
+                        || at.contains("$listener")) {
+                    at = expandDollarVariables(context, at);
+                } else {
+                    at = percentageVariablesToPlainText(context, at.replace("$", "%"));
+                }
+            }
+            result = at;
+        }
+        return result;
+    }
+
+    private ERObject getObjectFromContext(ERContext context, String currentArgString) {
+        ERObject instantiatedValue = context.getPerson(currentArgString);
+
+        if (instantiatedValue == null)
+            instantiatedValue = context.getArgument(currentArgString);
+        return instantiatedValue;
+    }
+
+    private String getTextVariable(String rawString, int startIndex) {
+        int endOfWordIndex = Tools.indexOf(rawString, ERconstants.textVariableSeparators, startIndex);
+
+        if (endOfWordIndex == -1) //special case when the variable is at the end of the string
+            endOfWordIndex = rawString.length();
+
+        return rawString.substring(startIndex, endOfWordIndex);
+    }
+
+    private String getReplacementStringFromObject(ERObject object) {
+        if (object instanceof ERPerson)
+            return ((ERPerson) object).getId();
+        else
+            return ((ERArgument) object).getValue();
+    }
+
     /**
      * Replaces all %variables in a string with their plain text counterparts.
      *
@@ -359,28 +370,21 @@ public class AnnotatedText {
      * @return the new, plain text string
      */
     private String percentageVariablesToPlainText(ERContext context, String newString2) {
-        String currentVariableString;
         int currentVariablePrefixIndex;
-        int currentSpaceAfterUnderscoreIndex;
         int currentIndex = 0;
 
         do {
             currentVariablePrefixIndex = newString2.indexOf(ERconstants.variablePrefix, currentIndex);
 
             if (currentVariablePrefixIndex != -1) {
-                currentSpaceAfterUnderscoreIndex = Tools.indexOf(
-                        newString2, ERconstants.textVariableSeparators, currentVariablePrefixIndex + 1);
-
-                if (currentSpaceAfterUnderscoreIndex == -1) //special case when the variable is at the end
-                    currentSpaceAfterUnderscoreIndex = newString2.length();
-                currentVariableString = newString2.substring(currentVariablePrefixIndex + 1, currentSpaceAfterUnderscoreIndex);
+                String currentVariableString = getTextVariable(newString2, currentVariablePrefixIndex + 1);
 
                 if (currentVariableString.equals("")) {
                     Logger.tag("AT").error("Variable is empty in text: {}", this);
                     break;
                 }
 
-                String at = "";
+                String at;
                 if (currentVariableString.equals("speaker")) {
                     at = this.selectAnnotatedText(context.getSpeaker().getId(), context);
                 } else if (currentVariableString.equals("listener")) {

@@ -1,5 +1,4 @@
 import expreal.erElements.*;
-import expreal.erElements.ERContext;
 import expreal.erRealizer.ExpressiveActionRealizer;
 import org.junit.Before;
 import org.junit.Test;
@@ -154,7 +153,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void genderBothMentionedTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "pronoun-gender"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -171,7 +170,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void reflexiveVerbPronounTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "pronoun-reflexiveverb"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -188,7 +187,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void reflexiveVerbPronounSecondPersonTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "pronoun-reflexiveverb"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -205,7 +204,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void refExpSimpleRepetitionTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "refexp-simplerepetition"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -222,7 +221,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void refExpLongDistanceTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "refexp-longdistance"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -244,7 +243,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void refExpLongDistanceOwnerTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "refexp-longdistanceowner"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -265,7 +264,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void refExpAmbiguityTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "refexp-ambiguity"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -282,7 +281,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void refExpAmbiguityOwnerTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "refexp-ambiguityowner"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -299,7 +298,7 @@ public class PronounTest extends TestHelper {
      */
     @Test
     public void refExpAmbiguityOwnerFeatureTest() {
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "refexp-ambiguityownerfeature"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 

@@ -458,7 +458,7 @@ public class ExpressiveActionRealizer {
 
         //// PARSE VERB ////
         if (elementType.equals("verb")) {
-            ERVerbPhrase verb = new ERVerbPhrase(phrase, nlgFactory, lexicon);
+            ERVerbPhrase verb = new ERVerbPhrase(phrase, nlgFactory);
             boolean hasReflexive = false;
 
             // Detect and use reflexive pronouns
@@ -483,7 +483,7 @@ public class ExpressiveActionRealizer {
 
         //// PARSE INFINITIVE VERB ////
         if (elementType.equals("inf") || elementType.equals("infinitive")) {
-            ERVerbPhrase infiniteVerb = new ERVerbPhrase(phrase, nlgFactory, lexicon);
+            ERVerbPhrase infiniteVerb = new ERVerbPhrase(phrase, nlgFactory);
             boolean hasReflexive = false;
 
             // Detect and use reflexive pronouns
@@ -587,7 +587,7 @@ public class ExpressiveActionRealizer {
      * Return type that contains the string marking the entire input blockString that needs to be replaced and optionally
      * a string with which to replace the blockString.
      */
-    private class ParseInputBlockReturn {
+    private static class ParseInputBlockReturn {
         ERPhraseElement nlgElement;
         String type, blockString, replacementString;
         boolean hasReflexive, isGhostBlock, doCapitalise;

@@ -1,8 +1,4 @@
-import expreal.erElements.ERArgument;
-import expreal.erElements.ERGender;
-import expreal.erElements.ERPerson;
-import expreal.erElements.ERPredicate;
-import expreal.erElements.ERContext;
+import expreal.erElements.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -229,7 +225,7 @@ public class NounFeatureTest extends TestHelper {
     @Test
     public void frenchContractionALeTest() {
         context.clearArguments();
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "noun-contraction-ale"));
         arguments.add(new ERArgument("location", "salon"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
@@ -243,7 +239,7 @@ public class NounFeatureTest extends TestHelper {
     @Test
     public void frenchContractionDeLeTest() {
         context.clearArguments();
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "noun-contraction-dele"));
         arguments.add(new ERArgument("location", "salon"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
@@ -257,7 +253,7 @@ public class NounFeatureTest extends TestHelper {
     @Test
     public void frenchContractionVariableTest() {
         context.clearArguments();
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "noun-contraction-variable"));
         arguments.add(new ERArgument("location", "salon"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
@@ -271,7 +267,7 @@ public class NounFeatureTest extends TestHelper {
     @Test
     public void frenchElisionTest() {
         context.clearArguments();
-        Vector<ERArgument> arguments = new Vector<ERArgument>();
+        Vector<ERArgument> arguments = new Vector<>();
         arguments.add(new ERArgument("test", "noun-elision"));
         arguments.add(new ERArgument("task", "goSomewhere"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);

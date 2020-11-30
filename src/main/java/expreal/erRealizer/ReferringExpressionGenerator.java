@@ -104,10 +104,7 @@ class ReferringExpressionGenerator {
         ERMentionedEntity entity = mentionDistances.get(key);
         boolean isAmbiguous = isAmbiguousRefExp(key, context);
 
-        if (entity.getMentionDistance() > ERconstants.refExpLongDistance) {
-            // Don't change nounPhrase
-
-        } else if (!isAmbiguous
+        if (!isAmbiguous
                 && !entity.getId().equals("")
                 && entity.getMentionDistance() == 1) {
             nounPhrase.setFeature(Feature.PRONOMINAL, true);
@@ -121,7 +118,7 @@ class ReferringExpressionGenerator {
 
         } else if (isAmbiguous) {
             realiseCompetingAntecedent(key);
-        } else {
+        } else if (ERconstants.refExpLongDistance >= entity.getMentionDistance()) {
             nounPhrase.setFeature(Feature.PRONOMINAL, true);
             nounPhrase.setFeature(Feature.PERSON, Person.THIRD);
         }
@@ -167,8 +164,8 @@ class ReferringExpressionGenerator {
             number = "SINGULAR";
 
         // Compare to entities already mentioned in current or last sentence
-        for (Map.Entry mention : mentionDistances.entrySet()) {
-            ERMentionedEntity currentEntity = (ERMentionedEntity) mention.getValue();
+        for (Map.Entry<String, ERMentionedEntity> mention : mentionDistances.entrySet()) {
+            ERMentionedEntity currentEntity = mention.getValue();
 
             if (currentEntity == entity // Don't compare to itself
                     || currentEntity.getMentionDistance() >= 2) // Also don't compare it if not in current or last sentence.

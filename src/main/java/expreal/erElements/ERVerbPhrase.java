@@ -3,7 +3,6 @@ package expreal.erElements;
 import simplenlg.features.*;
 import simplenlg.framework.Language;
 import simplenlg.framework.NLGFactory;
-import simplenlg.lexicon.Lexicon;
 import simplenlg.phrasespec.SPhraseSpec;
 import simplenlg.phrasespec.VPPhraseSpec;
 
@@ -16,13 +15,11 @@ public class ERVerbPhrase extends VPPhraseSpec implements ERPhraseElement {
     public boolean doCapitalise = false;
     private SPhraseSpec parentPhrase;
     private NLGFactory factory;
-    private Lexicon lexicon;
 
-    public ERVerbPhrase(SPhraseSpec parentPhrase, NLGFactory factory, Lexicon lexicon) {
+    public ERVerbPhrase(SPhraseSpec parentPhrase, NLGFactory factory) {
         super(factory);
         this.parentPhrase = parentPhrase;
         this.factory = factory;
-        this.lexicon = lexicon;
     }
 
     /**

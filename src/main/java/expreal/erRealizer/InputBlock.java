@@ -3,8 +3,6 @@ package expreal.erRealizer;
 
 import org.tinylog.Logger;
 
-import java.util.Hashtable;
-
 /**
  * Parse an input block {} and make its elements available as properties.
  *
@@ -99,10 +97,8 @@ class InputBlock {
 
     /**
      * Parse the input block and separate its string into the various properties.
-     *
-     * @return a parsed input block
      */
-    InputBlock parse() {
+    void parse() {
         // Get the individual parts from the valueString
         mainNounFeatureString = "";
         ownerNounString = "";
@@ -148,7 +144,6 @@ class InputBlock {
         } else {
             mainNounString = valueString.replace("\\|", "").trim();
         }
-        return this;
     }
 
     @Override
