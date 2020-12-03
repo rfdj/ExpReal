@@ -177,7 +177,7 @@ public class AnnotatedText {
         }
 
         /* Recursive replacement of variables: %XXX -> plain text */
-        result = percentageVariablesToPlainText(context, result);
+        result = percentageVariablesToPlainText(context, result, false);
 
         return result;
     }
@@ -258,65 +258,59 @@ public class AnnotatedText {
      * @return the new string with $variablenames having been replaced by %variablenames
      */
     private String expandDollarVariables(ERContext context, String newString) {
-        int currentIndex = 0;
-        int currentDollarIndex;
+        int index = newString.indexOf("$");
 
-        do {
-            currentDollarIndex = newString.indexOf("$", currentIndex);
+        while (index > -1) {
 
-            if (currentDollarIndex != -1) {
 
-                // Determine the length of the variable
-                String textVariable = getTextVariable(newString, currentDollarIndex + 1);
-                ERObject contextObject = getObjectFromContext(context, textVariable);
+            // Determine the length of the variable
+            String textVariable = getTextVariable(newString, index + 1);
+            ERObject contextObject = getObjectFromContext(context, textVariable);
 
-                if (contextObject == null) {
-                    // Variable not found in context. Let's try it as a %variable.
-                    newString = percentageVariablesToPlainText(context, newString.replace("$", "%"));
-                    currentIndex = currentDollarIndex + textVariable.length();
+            if (contextObject == null) {
+                // Variable not found in context. Let's try it as a %variable.
+                newString = percentageVariablesToPlainText(context, newString.replace("$", "%"), true);
+            } else {
+                // Build the replacement string based on the context variable,
+                // replace whitespace with underscores,
+                // replace $ with % for further processing.
+
+                String replacementString = getReplacementStringFromObject(contextObject);
+
+                if (textVariable.equals("speaker") || textVariable.equals("listener")) {
+                    // $speaker and $listener are replaced by their % variables, e.g. %julia,
+                    // which will be realised later.
+                    newString = newString.replace("$" + textVariable, "%" + replacementString);
                 } else {
-                    // Build the replacement string based on the context variable,
-                    // replace whitespace with underscores,
-                    // replace $ with % for further processing.
+                    refExpGen.updateMentionDistance(replacementString);
 
-                    String replacementString = getReplacementStringFromObject(contextObject);
+                    String at = this.selectAnnotatedText(replacementString, context);
 
-                    if (textVariable.equals("speaker") || textVariable.equals("listener")) {
-                        // $speaker and $listener are replaced by their % variables, e.g. %julia,
-                        // which will be realised later.
-                        newString = newString.replace("$" + textVariable, "%" + replacementString);
-                    } else {
-                        refExpGen.updateMentionDistance(replacementString);
+                    replacementString = expandAnnotatedText(context, replacementString, at);
 
-                        String at = this.selectAnnotatedText(replacementString, context);
-
-                        replacementString = expandAnnotatedText(context, replacementString, at);
-
-                        String targetString;
-                        if (newString.substring(0, currentDollarIndex).endsWith(" de ")
-                                && expressiveActionRealizer.startsWithVowelOrIsolatedY(replacementString)) {
-                            targetString = " de $" + textVariable;
-                            replacementString = " d'" + replacementString;
-                        } else if (newString.substring(0, currentDollarIndex).endsWith(" à ")) {
-                            if (replacementString.startsWith("le ")) {
-                                targetString = " à $" + textVariable;
-                                replacementString = " au " + replacementString.substring(3);
-                            } else if (replacementString.startsWith("les ")) {
-                                targetString = " à $" + textVariable;
-                                replacementString = " aux " + replacementString.substring(4);
-                            } else {
-                                targetString = "$" + textVariable;
-                            }
+                    String targetString;
+                    if (newString.substring(0, index).endsWith(" de ")
+                            && expressiveActionRealizer.startsWithVowelOrIsolatedY(replacementString)) {
+                        targetString = " de $" + textVariable;
+                        replacementString = " d'" + replacementString;
+                    } else if (newString.substring(0, index).endsWith(" à ")) {
+                        if (replacementString.startsWith("le ")) {
+                            targetString = " à $" + textVariable;
+                            replacementString = " au " + replacementString.substring(3);
+                        } else if (replacementString.startsWith("les ")) {
+                            targetString = " à $" + textVariable;
+                            replacementString = " aux " + replacementString.substring(4);
                         } else {
                             targetString = "$" + textVariable;
                         }
-                        newString = newString.replace(targetString, replacementString);
+                    } else {
+                        targetString = "$" + textVariable;
                     }
-                    currentIndex = currentDollarIndex + replacementString.length();
-
+                    newString = newString.replace(targetString, replacementString);
                 }
             }
-        } while (currentDollarIndex != -1);
+            index = newString.indexOf("$", index + 1);
+        }
 
         return newString;
     }
@@ -330,7 +324,7 @@ public class AnnotatedText {
                         || at.contains("$listener")) {
                     at = expandDollarVariables(context, at);
                 } else {
-                    at = percentageVariablesToPlainText(context, at.replace("$", "%"));
+                    at = percentageVariablesToPlainText(context, at.replace("$", "%"), false);
                 }
             }
             result = at;
@@ -339,6 +333,12 @@ public class AnnotatedText {
     }
 
     private ERObject getObjectFromContext(ERContext context, String currentArgString) {
+        if (currentArgString.equals("speaker"))
+            return context.getSpeaker();
+
+        if (currentArgString.equals("listener"))
+            return context.getListener();
+
         ERObject instantiatedValue = context.getPerson(currentArgString);
 
         if (instantiatedValue == null)
@@ -365,11 +365,12 @@ public class AnnotatedText {
     /**
      * Replaces all %variables in a string with their plain text counterparts.
      *
-     * @param context    the context from which to get the replacement names
-     * @param newString2 the string in which the variables will be replaced
+     * @param context             the context from which to get the replacement names
+     * @param newString2          the string in which the variables will be replaced
+     * @param doAddFeatureStrings only add feature strings if they will be processed afterwards
      * @return the new, plain text string
      */
-    private String percentageVariablesToPlainText(ERContext context, String newString2) {
+    private String percentageVariablesToPlainText(ERContext context, String newString2, boolean doAddFeatureStrings) {
         int currentVariablePrefixIndex;
         int currentIndex = 0;
 
@@ -387,11 +388,17 @@ public class AnnotatedText {
                 String at;
                 if (currentVariableString.equals("speaker")) {
                     at = this.selectAnnotatedText(context.getSpeaker().getId(), context);
+                    if (doAddFeatureStrings)
+                        at += context.getSpeaker().getGender() == ERGender.FEMININE ? ".f" : ".m";
                 } else if (currentVariableString.equals("listener")) {
                     at = this.selectAnnotatedText(context.getListener().getId(), context);
+                    if (doAddFeatureStrings)
+                        at += context.getListener().getGender() == ERGender.FEMININE ? ".f" : ".m";
                 } else if (context.getPersonByRealisedName(currentVariableString) != null) {
                     at = context.getPersonByRealisedName(currentVariableString).getRealisedName(
                             expressiveActionRealizer.getCurrentLanguage().ordinal());
+                    if (doAddFeatureStrings)
+                        at += context.getPersonByRealisedName(currentVariableString).getGender() == ERGender.FEMININE ? ".f" : ".m";
                 } else if (context.getArgument(currentVariableString) != null) {
                     String argumentValue = context.getArgument(currentVariableString).getValue();
                     at = this.selectAnnotatedText(argumentValue, context);

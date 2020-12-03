@@ -45,6 +45,7 @@ InformIntention;$test=verbs-conditional;$listener, it would be nice if {subject:
 InformIntention;$test=verbs-parentchildagreement;{subject: %julia.c} $wish.;{subject: %julia.c} $wish.;{subject: %julia.c} $wish.
 wantToDance;;{verb: want} to dance;{verb: vouloir} danser;{verb: willen} dansen
 wantToAmuseYourself;;{verb: want} {inf: amuse yourself};{verb: vouloir} {inf: se amuser};{verb: willen} {inf: zich amuseren}
+InformIntention;$test=verbs-frenchparticiple;#;{subject:$speaker.c} {verb: être} {complement: fatigué}.;#
 ;;;;
 # Test SwitchDialog;;;;
 InformIntention;$test=switchdialog1;—Hi, $listener!— answer: —Hello, $speaker!—;—Salut, $listener!— answer: —Bonjour, $speaker!—;—Hoi, $listener!— answer: —Hallo, $speaker!—

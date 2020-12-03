@@ -1,8 +1,4 @@
-import expreal.erElements.ERArgument;
-import expreal.erElements.ERGender;
-import expreal.erElements.ERPerson;
-import expreal.erElements.ERPredicate;
-import expreal.erElements.ERContext;
+import expreal.erElements.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +33,6 @@ public class VerbTest extends TestHelper {
     @Test
     public void presentSimpleTest() {
         Vector<ERArgument> arguments = new Vector<>();
-        arguments.add(new ERArgument("speaker", "pete"));
         arguments.add(new ERArgument("test", "verbs"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -73,7 +68,6 @@ public class VerbTest extends TestHelper {
     @Test
     public void infinitiveTest() {
         Vector<ERArgument> arguments = new Vector<>();
-        arguments.add(new ERArgument("speaker", "pete"));
         arguments.add(new ERArgument("test", "verbs-infinitive"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -91,7 +85,6 @@ public class VerbTest extends TestHelper {
     @Test
     public void infinitiveReflexiveTest() {
         Vector<ERArgument> arguments = new Vector<>();
-        arguments.add(new ERArgument("speaker", "pete"));
         arguments.add(new ERArgument("test", "verbs-infinitivereflexive"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -109,7 +102,6 @@ public class VerbTest extends TestHelper {
     @Test
     public void infinitiveReflexiveThirdPersonTest() {
         Vector<ERArgument> arguments = new Vector<>();
-        arguments.add(new ERArgument("speaker", "julia"));
         arguments.add(new ERArgument("test", "verbs-infinitivereflexive"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -127,8 +119,6 @@ public class VerbTest extends TestHelper {
     @Test
     public void conditionalTest() {
         Vector<ERArgument> arguments = new Vector<>();
-        arguments.add(new ERArgument("speaker", "julia"));
-        arguments.add(new ERArgument("listener", "lili"));
         arguments.add(new ERArgument("test", "verbs-conditional"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
 
@@ -146,8 +136,6 @@ public class VerbTest extends TestHelper {
     @Test
     public void parentChildAgreementTest() {
         Vector<ERArgument> arguments = new Vector<>();
-        arguments.add(new ERArgument("speaker", "julia"));
-        arguments.add(new ERArgument("listener", "lili"));
         arguments.add(new ERArgument("test", "verbs-parentchildagreement"));
         arguments.add(new ERArgument("wish", "wantToDance"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
@@ -166,8 +154,6 @@ public class VerbTest extends TestHelper {
     @Test
     public void parentChildAgreementReflexiveTest() {
         Vector<ERArgument> arguments = new Vector<>();
-        arguments.add(new ERArgument("speaker", "julia"));
-        arguments.add(new ERArgument("listener", "lili"));
         arguments.add(new ERArgument("test", "verbs-parentchildagreement"));
         arguments.add(new ERArgument("wish", "wantToAmuseYourself"));
         ERPredicate predicate = new ERPredicate("InformIntention", arguments);
@@ -178,5 +164,37 @@ public class VerbTest extends TestHelper {
         testEnglishPredicate(predicate, context, "I want to amuse myself.");
         testFrenchPredicate(predicate, context, "Je veux m'amuser.");
         testDutchPredicate(predicate, context, "Ik wil me amuseren.");
+    }
+
+    /**
+     * Tests the agreement between a parent clause and its nested child, such as $task. This child has a reflexive verb.
+     */
+    @Test
+    public void frenchMasculineParticipleTest() {
+        Vector<ERArgument> arguments = new Vector<>();
+        arguments.add(new ERArgument("test", "verbs-frenchparticiple"));
+        arguments.add(new ERArgument("wish", "wantToAmuseYourself"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        context.setSpeaker(paul);
+        context.setListener(lili);
+
+        testFrenchPredicate(predicate, context, "Je suis fatigué.");
+    }
+
+    /**
+     * Tests the agreement between a parent clause and its nested child, such as $task. This child has a reflexive verb.
+     */
+    @Test
+    public void frenchFeminineParticipleTest() {
+        Vector<ERArgument> arguments = new Vector<>();
+        arguments.add(new ERArgument("test", "verbs-frenchparticiple"));
+        arguments.add(new ERArgument("wish", "wantToAmuseYourself"));
+        ERPredicate predicate = new ERPredicate("InformIntention", arguments);
+
+        context.setSpeaker(julia);
+        context.setListener(lili);
+
+        testFrenchPredicate(predicate, context, "Je suis fatiguée.");
     }
 }

@@ -4,6 +4,7 @@ import expreal.erElements.*;
 import org.tinylog.Logger;
 import simplenlg.features.Feature;
 import simplenlg.features.Form;
+import simplenlg.features.Gender;
 import simplenlg.features.LexicalFeature;
 import simplenlg.framework.LexicalCategory;
 import simplenlg.framework.NLGElement;
@@ -267,8 +268,11 @@ public class ExpressiveActionRealizer {
         realiser.realise(phrase);
 
         for (ParseInputBlockReturn parsedBlock : parsedInputBlocks) {
-            if (parsedBlock.replacementString.equals("") && parsedBlock.nlgElement != null)
+            if (parsedBlock.replacementString.equals("") && parsedBlock.nlgElement != null) {
                 parsedBlock.replacementString = realiser.realise((NLGElement) parsedBlock.nlgElement).getRealisation();
+                if (currentLanguage == ERLanguage.FRENCH && parsedBlock.isFrenchFeminineParticiple)
+                    parsedBlock.replacementString += "e";
+            }
 
             addDutchReflexivePronoun(parsedBlock);
 
@@ -478,7 +482,7 @@ public class ExpressiveActionRealizer {
             }
             phrase.setVerb(verb);
 
-            return new ParseInputBlockReturn(inputBlock, verb, "", hasReflexive);
+            return new ParseInputBlockReturn(inputBlock, verb, "", hasReflexive, false);
         }
 
         //// PARSE INFINITIVE VERB ////
@@ -500,23 +504,41 @@ public class ExpressiveActionRealizer {
             }
 
             // Copy person, number and gender. The pronoun should agree with the subject, but may resort to the verb phrase itself.
-            NLGElement subject = phrase.getSubject();
-            if (subject != null) {
-                infiniteVerb.setFeature(Feature.PERSON, phrase.getSubject().getFeature(Feature.PERSON));
-                infiniteVerb.setFeature(Feature.NUMBER, phrase.getSubject().getFeature(Feature.NUMBER));
-                infiniteVerb.setFeature(LexicalFeature.GENDER, phrase.getSubject().getFeature(LexicalFeature.GENDER));
-            } else {
-                infiniteVerb.setFeature(Feature.PERSON, phrase.getFeature(Feature.PERSON));
-                infiniteVerb.setFeature(Feature.NUMBER, phrase.getFeature(Feature.NUMBER));
-                infiniteVerb.setFeature(LexicalFeature.GENDER, phrase.getFeature(LexicalFeature.GENDER));
-            }
+            copyLexicalFeaturesFromSubject(phrase, infiniteVerb);
 
             infiniteVerb.setFeature(Feature.FORM, Form.INFINITIVE);
 
             VPPhraseSpec mainVerb = (VPPhraseSpec) phrase.getVerbPhrase();
             mainVerb.addComplement(infiniteVerb);
 
-            return new ParseInputBlockReturn(inputBlock, infiniteVerb, "", hasReflexive);
+            return new ParseInputBlockReturn(inputBlock, infiniteVerb, "", hasReflexive, false);
+        }
+
+        //// PARSE PARTICIPLE VERB ////
+        if (elementType.equals("complement")) {
+            ERVerbPhrase participleVerb = new ERVerbPhrase(phrase, nlgFactory);
+
+            // Detect and use reflexive pronouns
+            String[] verbParts = inputBlock.getValueString().split(" ");
+
+            if (verbParts.length == 1) { // Skip multi-word complements. Those can only be noun phrases.
+                if (lexicon.hasWordFromVariant(verbParts[0], LexicalCategory.VERB)) {
+                    WordElement word = lexicon.getWord(verbParts[0], LexicalCategory.VERB);
+                    participleVerb.setHead(word);
+
+                    // Copy person, number and gender. The participle should agree with the subject, but may resort to the verb phrase itself.
+                    copyLexicalFeaturesFromSubject(phrase, participleVerb);
+
+                    participleVerb.setFeature(Feature.FORM, Form.PAST_PARTICIPLE);
+
+                    VPPhraseSpec mainVerb = (VPPhraseSpec) phrase.getVerbPhrase();
+                    mainVerb.addComplement(participleVerb);
+
+                    boolean isFeminine = (participleVerb.getFeature(LexicalFeature.GENDER) == Gender.FEMININE);
+
+                    return new ParseInputBlockReturn(inputBlock, participleVerb, "", false, isFeminine);
+                }
+            }
         }
 
         //// PARSE NOUN PHRASE ////
@@ -551,7 +573,20 @@ public class ExpressiveActionRealizer {
         entity.setGender(nounPhrase.getFeatureAsString(LexicalFeature.GENDER));
         entity.setNumber(nounPhrase.getFeatureAsString(Feature.NUMBER));
 
-        return new ParseInputBlockReturn(inputBlock, nounPhrase, "", false);
+        return new ParseInputBlockReturn(inputBlock, nounPhrase, "", false, false);
+    }
+
+    private void copyLexicalFeaturesFromSubject(SPhraseSpec phrase, ERVerbPhrase participleVerb) {
+        NLGElement subject = phrase.getSubject();
+        if (subject != null) {
+            participleVerb.setFeature(Feature.PERSON, phrase.getSubject().getFeature(Feature.PERSON));
+            participleVerb.setFeature(Feature.NUMBER, phrase.getSubject().getFeature(Feature.NUMBER));
+            participleVerb.setFeature(LexicalFeature.GENDER, phrase.getSubject().getFeature(LexicalFeature.GENDER));
+        } else {
+            participleVerb.setFeature(Feature.PERSON, phrase.getFeature(Feature.PERSON));
+            participleVerb.setFeature(Feature.NUMBER, phrase.getFeature(Feature.NUMBER));
+            participleVerb.setFeature(LexicalFeature.GENDER, phrase.getFeature(LexicalFeature.GENDER));
+        }
     }
 
     /**
@@ -590,15 +625,16 @@ public class ExpressiveActionRealizer {
     private static class ParseInputBlockReturn {
         ERPhraseElement nlgElement;
         String type, blockString, replacementString;
-        boolean hasReflexive, isGhostBlock, doCapitalise;
+        boolean hasReflexive, isFrenchFeminineParticiple, isGhostBlock, doCapitalise;
 
         ParseInputBlockReturn(InputBlock inputBlock, ERPhraseElement _nlgElement,
-                              String _replacementString, boolean _hasReflexive) {
+                              String _replacementString, boolean _hasReflexive, boolean _isFrenchFeminineParticiple) {
             type = inputBlock.getTypeString();
             blockString = inputBlock.getRawString();
             nlgElement = _nlgElement;
             replacementString = _replacementString;
             hasReflexive = _hasReflexive;
+            isFrenchFeminineParticiple = _isFrenchFeminineParticiple;
             isGhostBlock = inputBlock.isGhostBlock();
             if (_nlgElement instanceof ERVerbPhrase)
                 doCapitalise = ((ERVerbPhrase) _nlgElement).doCapitalise;
